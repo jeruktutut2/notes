@@ -1,0 +1,53 @@
+version: "3.8"
+
+services:
+  cockroach1:
+    # image: cockroachdb/cockroach:v23.2.23 # non oss (enterprise version)
+    image: cockroachdb/cockroach:v23.1.11  # versi OSS (open source)
+    container_name: cockroach-node-1
+    command: start --insecure --join=cockroach1,cockroach2,cockroach3
+    ports:
+      - "26257:26257"
+      - "8081:8080"
+    networks:
+      - cockroach-net
+
+  cockroach2:
+    # image: cockroachdb/cockroach:v23.2.23 # non oss (enterprise version)
+    image: cockroachdb/cockroach:v23.1.11  # versi OSS (open source)
+    container_name: cockroach-node-2
+    command: start --insecure --join=cockroach1,cockroach2,cockroach3
+    ports:
+      - "26258:26257"
+      - "8082:8080"
+    networks:
+      - cockroach-net
+
+  cockroach3:
+    # image: cockroachdb/cockroach:v23.2.23 # non oss (enterprise version)
+    image: cockroachdb/cockroach:v23.1.11  # versi OSS (open source)
+    container_name: cockroach-node-3
+    command: start --insecure --join=cockroach1,cockroach2,cockroach3
+    ports:
+      - "26259:26257"
+      - "8083:8080"
+    networks:
+      - cockroach-net
+  
+  haproxy:
+    image: haproxy:2.4
+    container_name: haproxy-cockroach
+    ports:
+      - "26260:26260"
+    volumes:
+      - ./haproxy.cfg:/usr/local/etc/haproxy/haproxy.cfg:ro
+    depends_on:
+      - cockroach1
+      - cockroach2
+      - cockroach3
+    networks:
+      - cockroach-net
+
+networks:
+  cockroach-net:
+    

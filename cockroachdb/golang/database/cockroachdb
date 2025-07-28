@@ -1,0 +1,66 @@
+docker created by docker compose
+docker exec -it cockroach-node-1 bash
+
+psql -h localhost -d project_users -U postgres -W
+\list \l
+\c test1
+\dt
+
+CREATE DATABASE test1;
+\c test1
+\dt
+
+init the cluster
+docker exec -it cockroach-node-1 ./cockroach init --insecure
+
+docker exec -it cockroach-node-1 ./cockroach sql --insecure --host=cockroach1
+to check node status
+docker exec -it cockroach-node-1 ./cockroach node status --insecure --host=cockroach1
+
+docker exec -it cockroach-node-2 ./cockroach sql --insecure --host=cockroach2
+to check node status
+docker exec -it cockroach-node-2 ./cockroach node status --insecure --host=cockroach2
+
+docker exec -it cockroach-node-3 ./cockroach sql --insecure --host=cockroach3
+to check node status
+docker exec -it cockroach-node-3 ./cockroach node status --insecure --host=cockroach3
+
+docker exec -it = enter the container
+./cockroach sql = open CLI the CockroachDB SQL
+--insecure = use connection without TLS (because using insecure mode)
+--host=cockroach1 = hostname from node (usually same with service name in docker compose)
+
+show internal TABLE
+SELECT node_id, network, address, advertise_address FROM crdb_internal.gossip_nodes;
+or
+SHOW RANGES FROM TABLE test1;
+
+check status DATABASE:
+SELECT datname, usename, application_name, client_addr, state, count(*) as connections
+FROM pg_stat_activity
+GROUP BY datname, usename, application_name, client_addr, state
+ORDER BY connections DESC;
+
+SELECT datname, usename, application_name, client_addr, state
+FROM pg_stat_activity;
+
+CREATE TABLE test1 (
+    id UUID PRIMARY KEY,
+    test STRING NOT NULL
+);
+INSERT INTO test1(id, test) VALUES('0196268c-6dbc-78d3-8b94-75e498ccae68', 'test1');
+SELECT * FROM test1;
+
+CREATE TABLE test2 (
+    id UUID PRIMARY KEY,
+    test STRING NOT NULL
+);
+INSERT INTO test2(id, test) VALUES('01962690-624d-79fc-b22e-fca2a3a5c55f', 'test2');
+SELECT * FROM test2;
+
+CREATE TABLE test3 (
+    id UUID PRIMARY KEY,
+    test STRING NOT NULL
+);
+INSERT INTO test3(id, test) VALUES('01962690-8dda-7c2b-97a7-d8b1277071c3', 'test3');
+SELECT * FROM test3;
