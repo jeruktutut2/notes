@@ -1,0 +1,28 @@
+receivers:
+  otlp:
+    protocols:
+      http:
+
+exporters:
+  jaeger:
+    endpoint: "http://jaeger:14268/api/traces"
+    tls:
+      insecure: true
+
+  prometheus:
+    endpoint: "0.0.0.0:8888"
+
+processors:
+  batch:
+
+service:
+  pipelines:
+    traces:
+      receivers: [otlp]
+      processors: [batch]
+      exporters: [jaeger]
+
+    metrics:
+      receivers: [otlp]
+      processors: [batch]
+      exporters: [prometheus]
