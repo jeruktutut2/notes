@@ -1,0 +1,10 @@
+docker run --name project-mysql -e MYSQL_ROOT_PASSWORD=12345 -e MYSQL_DATABASE=golang_note -p 3308:3306 -d mysql:8.1.0
+mysql -h localhost -u root -p12345
+docker run --name project-mysql -e MYSQL_ROOT_PASSWORD=12345 -p 3309:3306 -d mysql:8.1.0
+use project_test;
+SHOW CREATE TABLE test1;
+CREATE TABLE `test1` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `test` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;

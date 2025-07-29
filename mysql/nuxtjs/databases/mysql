@@ -1,0 +1,13 @@
+docker exec -it golang-note bash
+mysql -h localhost -u root -p12345
+
+CREATE TABLE test1 (
+    id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    test VARCHAR(255) NOT NULL
+) ENGINE=InnoDB CHARACTER SET utf8;
+
+INSERT INTO test1(id, test) VALUES (1, "test1");
+INSERT INTO test1(id, test) VALUES (2, "test2");
+INSERT INTO test1(id, test) VALUES (3, "test3");
+
+SELECT * FROM test1;
