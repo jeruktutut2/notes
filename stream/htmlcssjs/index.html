@@ -1,0 +1,73 @@
+<!-- <!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Streaming dari Golang</title>
+    <style>
+        body { font-family: Arial, sans-serif; text-align: center; margin: 50px; }
+        #output { border: 1px solid #ddd; padding: 20px; width: 300px; margin: auto; }
+    </style>
+</head>
+<body>
+    <h2>Streaming Data dari Golang</h2>
+    <div id="output">Menunggu data...</div>
+
+    <script>
+        const output = document.getElementById("output");
+
+        // Membuka koneksi ke server menggunakan Server-Sent Events (SSE)
+        const eventSource = new EventSource("http://localhost:8080/stream/stream-without-channel");
+
+        eventSource.onmessage = function(event) {
+            console.log(event.data);
+            output.innerHTML += `<p>${event.data}</p>`;
+        };
+
+        eventSource.onerror = function() {
+            output.innerHTML += `<p style="color:red;">Koneksi terputus.</p>`;
+            eventSource.close(); // Menutup koneksi jika error
+        };
+    </script>
+</body>
+</html> -->
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Streaming dengan Fetch</title>
+    <style>
+        body { font-family: Arial, sans-serif; text-align: center; margin: 50px; }
+        #output { border: 1px solid #ddd; padding: 20px; width: 300px; margin: auto; }
+    </style>
+</head>
+<body>
+    <h2>Streaming dengan Fetch</h2>
+    <button onclick="startStreaming()">Mulai Streaming</button>
+    <div id="output">Menunggu data...</div>
+
+    <script>
+        async function startStreaming() {
+            const output = document.getElementById("output");
+            output.innerHTML = "Menerima data...<br>";
+
+            try {
+                const response = await fetch("http://localhost:8080/stream/stream-without-channel");
+                const reader = response.body.getReader();
+                const decoder = new TextDecoder();
+
+                while (true) {
+                    const { done, value } = await reader.read();
+                    if (done) break;
+                    console.log(decoder.decode(value));
+                    output.innerHTML += `<p>${decoder.decode(value)}</p>`;
+                }
+            } catch (error) {
+                output.innerHTML += `<p style="color:red;">Error: ${error.message}</p>`;
+            }
+        }
+    </script>
+</body>
+</html>
