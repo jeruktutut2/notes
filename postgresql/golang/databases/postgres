@@ -1,0 +1,22 @@
+psql -h localhost -d project_users -U postgres -W
+\list \l
+\c test1
+\dt
+
+CREATE DATABASE test1;
+\c test1
+\dt
+
+CREATE TABLE test1 (
+    id SERIAL PRIMARY KEY,
+    test VARCHAR(100) NOT NULL
+);
+
+check status DATABASE:
+SELECT datname, usename, application_name, client_addr, state, count(*) as connections
+FROM pg_stat_activity
+GROUP BY datname, usename, application_name, client_addr, state
+ORDER BY connections DESC;
+
+SELECT datname, usename, application_name, client_addr, state
+FROM pg_stat_activity;
