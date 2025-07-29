@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Server-Sent Events</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin: 50px;
+        }
+        #events {
+            margin-top: 20px;
+            padding: 10px;
+            border: 1px solid #ccc;
+            width: 300px;
+            display: inline-block;
+            text-align: left;
+        }
+    </style>
+</head>
+<body>
+
+    <h2>Server-Sent Events (SSE) Demo</h2>
+    <div id="events">Menunggu data dari server...</div>
+
+    <script>
+        const eventSource = new EventSource("http://localhost:8080/sse/handle-sse-without-channel-2?id=2");
+
+        eventSource.onmessage = function(event) {
+            const data = JSON.parse(event.data);
+            console.log("data:", data);
+            // <small>${data.timestamp}</small>
+            console.log("event:", event);
+            document.getElementById("events").innerHTML = `
+                <strong>${data.message}</strong><br>
+            `;
+        };
+
+        eventSource.onerror = function() {
+            document.getElementById("events").innerHTML = "<span style='color:red;'>Koneksi terputus</span>";
+            eventSource.close();
+        };
+    </script>
+
+</body>
+</html>
