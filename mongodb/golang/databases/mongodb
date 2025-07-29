@@ -1,0 +1,78 @@
+docker run --name project-mongo -e MONGO_INITDB_ROOT_USERNAME=root -e MONGO_INITDB_ROOT_PASSWORD=12345 -p 27017:27017 -d mongo:latest
+docker exec -it project-mongo bash
+mongo -u root -p 12345 --authenticationDatabase admin
+mongosh -u root -p 12345 --authenticationDatabase admin
+show dbs
+use callCenter
+db
+
+CREATE COLLECTION USERS
+db.createCollection("users", {
+    validator: {
+        $jsonSchema: {
+            bsonType: "object",
+            required: ["email", "password"],
+            properties: {
+                "email": {
+                    bsonType: "string",
+                    description: "Email is required and must be a string"
+                },
+                "password": {
+                    bsonType: "string",
+                    description: "Password is required and must be a string"
+                }
+            }
+        }
+    }
+})
+db.users.createIndex({ email: 1 }, { unique: true })
+db.users.findOne({"email":"name"})
+
+CREATE COLLECTION USER SESSIONS
+db.createCollection("userSessions", {
+    validator: {
+        $jsonSchema: {
+            bsonType: "object",
+            required: ["user", ""accessToken", "accessTokenExpiredAt", "refreshToken", "refreshTokenExpiredAt", "ip", "userAgent"],
+            properties: {
+                "user": {
+                    "bsonType": "object",
+                    "required": ["id", "username"],
+                    "properties": {
+                        "_id": {
+                            "bsonType": "string",
+                            "description": "_id is required and must be a string"
+                        },
+                        "email": {
+                            "bsonType": "string",
+                            "description": "email is required and must be a string"
+                        }
+                    },
+                    "description": "User object is required and must contain id and email"
+                }
+                "accessToken": {
+                    bsonType: "string",
+                    description: "accessToken is required and must be a string"
+                },
+                "accessTokenExpiredAt": {
+                    bsonType: "NumberLong",
+                    description: "accessTokenExpiredAt is required and must be a NumberLong"
+                },
+                "refreshToken": {
+                    bsonType: "string",
+                    description: "refreshToken is required and must be a string"
+                },
+                "refreshTokenExpiredAt": {
+                    bsonType: "NumberLong",
+                    description: "refreshTokenExpiredAt is required and must be a NumberLong"
+                },
+            }
+        }
+    }
+})
+db.userSessions.createIndex({ accessToken: 1 }, { unique: true })
+db.userSessions.createIndex({ refreshToken: 1 }, { unique: true })
+db.userSessions.createIndex({ "user.id": 1 })
+db.userSessions.findOne({"user.email":"email@email.com"})
+
+show collections
