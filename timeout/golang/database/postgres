@@ -1,0 +1,8 @@
+psql -h localhost -d note_test -U postgres -W
+\list \l
+\c note_postgres
+\dt
+
+CREATE TABLE test1s (id SERIAL PRIMARY KEY, test VARCHAR(100) NULL);
+CREATE TABLE test2s (id SERIAL PRIMARY KEY, test VARCHAR(100) NULL);
+CREATE TABLE test3s (id SERIAL PRIMARY KEY, test VARCHAR(100) NULL);
