@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WebSocket Chat</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 20px;
+        }
+
+        #chat-container {
+            width: 400px;
+            margin: 0 auto;
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        #messages {
+            height: 300px;
+            overflow-y: auto;
+            border: 1px solid #ddd;
+            padding: 10px;
+            text-align: left;
+        }
+
+        input, button {
+            margin-top: 10px;
+            padding: 10px;
+            width: 100%;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+        }
+
+        button {
+            background-color: #28a745;
+            color: white;
+            cursor: pointer;
+        }
+
+        button.disconnect {
+            background-color: #dc3545;
+        }
+    </style>
+</head>
+<body>
+    <div id="chat-container">
+        <h2>WebSocket Chat</h2>
+        <input type="text" id="clientId" placeholder="Enter your Client ID">
+        <button onclick="connectWebSocket()">Connect</button>
+        <button class="disconnect" onclick="disconnectWebSocket()" disabled>Disconnect</button>
+
+        <div id="messages"></div>
+
+        <input type="text" id="recipientId" placeholder="Recipient ID">
+        <input type="text" id="message" placeholder="Type a message...">
+        <button onclick="sendMessage()">Send</button>
+    </div>
+
+    <script>
+        let socket = null;
+        let clientId = "";
+
+        function connectWebSocket() {
+            clientId = document.getElementById("clientId").value.trim();
+            if (!clientId) {
+                alert("Please enter a valid Client ID.");
+                return;
+            }
+
+            // socket = new WebSocket(`ws://localhost:5000/api/chat/connect/${clientId}`);
+            socket = new WebSocket(`ws://localhost:8080/ws/chat/connect/${clientId}`);
+
+            socket.onopen = () => {
+                logMessage("Connected to WebSocket as " + clientId);
+                document.querySelector("button.disconnect").disabled = false;
+            };
+
+            socket.onmessage = (event) => {
+                logMessage("Received: " + event.data);
+            };
+
+            socket.onclose = () => {
+                logMessage("Disconnected.");
+                document.querySelector("button.disconnect").disabled = true;
+            };
+
+            socket.onerror = (error) => {
+                console.error("WebSocket Error:", error);
+            };
+        }
+
+        function sendMessage() {
+            if (!socket || socket.readyState !== WebSocket.OPEN) {
+                alert("WebSocket is not connected.");
+                return;
+            }
+
+            const recipientId = document.getElementById("recipientId").value.trim();
+            const message = document.getElementById("message").value.trim();
+
+            if (!recipientId || !message) {
+                alert("Recipient ID and message are required.");
+                return;
+            }
+
+            // const payload = JSON.stringify({ to: recipientId, message: message });
+            const payload = recipientId +":"+ message
+            socket.send(payload);
+            logMessage("Sent: " + message);
+            document.getElementById("message").value = "";
+        }
+
+        function disconnectWebSocket() {
+            if (socket) {
+                socket.close();
+                socket = null;
+                logMessage("WebSocket connection closed.");
+            }
+        }
+
+        function logMessage(message) {
+            const messagesDiv = document.getElementById("messages");
+            const msgElement = document.createElement("p");
+            msgElement.textContent = message;
+            messagesDiv.appendChild(msgElement);
+            messagesDiv.scrollTop = messagesDiv.scrollHeight;
+        }
+    </script>
+</body>
+</html>

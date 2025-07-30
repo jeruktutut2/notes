@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WebSocket Client</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin: 50px;
+        }
+        #messages {
+            margin-top: 20px;
+            max-width: 500px;
+            text-align: left;
+            margin: auto;
+        }
+    </style>
+</head>
+<body>
+
+    <h2>WebSocket Client</h2>
+    <input type="text" id="clientId" placeholder="Masukkan ID Anda" />
+    <button onclick="connectWebSocket()">Hubungkan</button>
+
+    <h2>WebSocket Client Send To</h2>
+    <input type="text" id="clientIdSendTo" placeholder="Masukkan ID Anda" />
+    
+    <br><br>
+    <input type="text" id="messageInput" placeholder="Ketik pesan..." />
+    <button onclick="sendMessage()">Kirim</button>
+
+    <div id="messages"></div>
+
+    <script>
+        let ws;
+        let clientId;
+        let clientIdSendTo
+
+        function connectWebSocket() {
+            clientId = document.getElementById("clientId").value;
+            // clientIdSendTo = document.getElementById("clientIdSendTo").value;
+            if (!clientId) {
+                alert("Masukkan ID terlebih dahulu!");
+                return;
+            }
+
+            ws = new WebSocket(`ws://localhost:8080/ws?id=${clientId}`);
+
+            ws.onopen = () => {
+                console.log(`Terhubung sebagai ${clientId}`);
+                document.getElementById("messages").innerHTML += `<p>Terhubung sebagai ${clientId}</p>`;
+            };
+
+            ws.onmessage = (event) => {
+                console.log("Pesan dari server:", event.data);
+                document.getElementById("messages").innerHTML += `<p><b>Server:</b> ${event.data}</p>`;
+            };
+
+            ws.onclose = () => {
+                console.log("Koneksi terputus");
+                document.getElementById("messages").innerHTML += "<p><b>Koneksi terputus</b></p>";
+            };
+        }
+
+        function sendMessage() {
+            const clientIdSendTo = document.getElementById("clientIdSendTo").value;
+            const message = document.getElementById("messageInput").value;
+            // const message = input.value;
+            fetch(`http://localhost:8080/send-message?clientIdSendTo=${clientIdSendTo}&msg=${message}`) // Kirim via HTTP
+                .then(res => res.text())
+                .then(response => {
+                    document.getElementById("messages").innerHTML += `<p><b>Anda:</b> ${message}</p>`;
+                    console.log("Response:", response);
+                });
+
+            // input.value = "";
+        }
+    </script>
+
+</body>
+</html>
