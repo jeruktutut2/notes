@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title>WebRTC Audio Relay</title>
+</head>
+<body>
+    <h1>WebRTC Offer (Client)</h1>
+    <p>Status: <span id="status">Connecting...</span></p>
+    <audio id="remoteAudio" autoplay controls></audio>
+    <script>
+        const status = document.getElementById("status");
+
+        const socket = new WebSocket("ws://localhost:8080/ws-record-audio"); // Ganti dengan alamat WebSocket server kamu
+
+        let pc;
+
+        socket.onopen = async () => {
+            status.textContent = "WebSocket connected";
+            await startWebRTC();
+        };
+
+        socket.onmessage = async (event) => {
+            const msg = JSON.parse(event.data);
+            console.log("socket onmessage:", msg)
+            if (msg.type === "answer") {
+                console.log("Received answer");
+                await pc.setRemoteDescription({ type: "answer", sdp: msg.sdp });
+                status.textContent = "Connected (media)";
+            } else if (msg.type === "ice-candidate") {
+                console.log("Received ICE candidate from server");
+                await pc.addIceCandidate(msg.candidate);
+            }
+        };
+
+        async function startWebRTC() {
+            pc = new RTCPeerConnection({
+                iceServers: [{ urls: "stun:stun.l.google.com:19302" }]
+            });
+            // console.log("1 mantap")
+            pc.onicecandidate = (event) => {
+                // console.log("2")
+                if (event.candidate) {
+                    // console.log("3")
+                    console.log("ICE candidate:", event.candidate);
+                    socket.send(JSON.stringify({
+                        type: "ice-candidate",
+                        candidate: event.candidate
+                    }));
+                } else {
+                    console.log("✅ ICE gathering done");
+                }
+            };
+
+            pc.onicegatheringstatechange = () => {
+                console.log("ICE gathering state:", pc.iceGatheringState);
+            };
+
+            pc.ontrack = (event) => {
+                const remoteAudio = document.getElementById("remoteAudio");
+                const [remoteStream] = event.streams;
+                remoteAudio.srcObject = remoteStream;
+                console.log("✅ Remote stream received");
+            };
+
+            try {
+                const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+                stream.getTracks().forEach(track => pc.addTrack(track, stream));
+                status.textContent = "Microphone access granted";
+
+                const offer = await pc.createOffer();
+                await pc.setLocalDescription(offer);
+
+                socket.send(JSON.stringify({
+                    type: "offer",
+                    sdp: offer.sdp
+                }));
+
+                status.textContent = "Offer sent to server";
+            } catch (err) {
+                console.error("Error accessing microphone or sending offer:", err);
+                status.textContent = "Error: " + err.message;
+            }
+        }
+    </script>
+</body>
+</html>
