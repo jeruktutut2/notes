@@ -1,19 +1,24 @@
 package main
 
 import (
+	"context"
 	"embed"
 	"encoding/hex"
 	"encoding/json"
 	"fmt"
+	"io"
+	"io/fs"
+	"log"
+	"net/http"
+	"os"
+	"os/signal"
+	"time"
+
 	go_webrtcvad "github.com/aflyingHusky/go-webrtcvad"
 	"github.com/gorilla/websocket"
 	"github.com/labstack/echo/v4"
 	"github.com/pion/opus"
 	"github.com/pion/webrtc/v4"
-	"io"
-	"io/fs"
-	"log"
-	"net/http"
 )
 
 var upgrader = websocket.Upgrader{
@@ -36,7 +41,24 @@ func main() {
 	staticFiles, _ := fs.Sub(embeddedFiles, "static")
 	e.GET("/ws-vad", wsVad)
 	e.GET("/*", echo.WrapHandler(http.FileServer(http.FS(staticFiles))))
-	e.Logger.Fatal(e.Start(":8080"))
+	// e.Logger.Fatal(e.Start(":8080"))
+
+	ctx, stop := signal.NotifyContext(context.Background(), os.Interrupt)
+	defer stop()
+	// Start server
+	go func() {
+		if err := e.Start(":8080"); err != nil && err != http.ErrServerClosed {
+			e.Logger.Fatal("shutting down the server")
+		}
+	}()
+
+	// Wait for interrupt signal to gracefully shut down the server with a timeout of 10 seconds.
+	<-ctx.Done()
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+	if err := e.Shutdown(ctx); err != nil {
+		e.Logger.Fatal(err)
+	}
 }
 
 func wsVad(c echo.Context) error {
@@ -70,6 +92,11 @@ func wsVad(c echo.Context) error {
 		log.Println("AddTrack error:", err)
 	}
 
+	// f, err := os.OpenFile("out.opus", os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0644)
+	// if err != nil {
+	// 	log.Fatal(err)
+	// }
+
 	peerConnection.OnTrack(func(track *webrtc.TrackRemote, receiver *webrtc.RTPReceiver) {
 		log.Printf("Received track: %s\n", track.Codec().MimeType)
 
@@ -80,18 +107,32 @@ func wsVad(c echo.Context) error {
 		//defer vad.Free()
 		vad.SetMode(0)
 
+		// f, err := os.OpenFile("out.opus", os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0644)
+		// if err != nil {
+		// 	log.Fatal(err)
+		// }
+		// defer f.Close()
+
+		decoder := opus.NewDecoder()
+		if err != nil {
+			fmt.Println("opus.NewDecoder err:", err)
+		}
+		// fmt.Println("decoder :", decoder, err)
+
+		pcm := make([]byte, 1920)
+
 		go func() {
 			for {
-				fmt.Println("Track kind:", track.Kind())
-				fmt.Println("Track codec:", track.Codec().MimeType)
+				// fmt.Println("Track kind:", track.Kind())
+				// fmt.Println("Track codec:", track.Codec().MimeType)
 				if track.Kind() != webrtc.RTPCodecTypeAudio || track.Codec().MimeType != webrtc.MimeTypeOpus {
 					fmt.Println("Skipping track, not audio/opus")
 					return
 				}
-				fmt.Println("Got track!")
-				fmt.Println("Kind:", track.Kind())
-				fmt.Println("Codec:", track.Codec().MimeType)
-				fmt.Println("SSRC:", track.SSRC())
+				// fmt.Println("Got track!")
+				// fmt.Println("Kind:", track.Kind())
+				// fmt.Println("Codec:", track.Codec().MimeType)
+				// fmt.Println("SSRC:", track.SSRC())
 
 				pkt, _, err := track.ReadRTP()
 				if err != nil {
@@ -103,10 +144,18 @@ func wsVad(c echo.Context) error {
 					break
 				}
 				//fmt.Println("pkt:", pkt)
-				fmt.Println("pkt.Payload:", pkt.Payload)
-				fmt.Println("Opus payload length:", len(pkt.Payload))
-				fmt.Printf("First 8 bytes: % x\n", pkt.Payload[:8])
-				fmt.Printf("First 10 bytes: % x\n", pkt.Payload[:10])
+				// fmt.Println("pkt.Payload:", pkt.Payload)
+				// fmt.Println("Opus payload length:", len(pkt.Payload))
+				// fmt.Printf("First 8 bytes: % x\n", pkt.Payload[:8])
+				// fmt.Printf("First 10 bytes: % x\n", pkt.Payload[:10])
+
+				fmt.Println("Payload length:", len(pkt.Payload))
+				// n, err := f.Write(pkt.Payload)
+				// if err != nil {
+				// 	log.Println("Write failed:", err)
+				// } else {
+				// 	log.Println("Wrote", n, "bytes")
+				// }
 
 				//err = localTrack.WriteRTP(pkt)
 				//if err != nil {
@@ -124,14 +173,14 @@ func wsVad(c echo.Context) error {
 				//fmt.Println("packet:", packet)
 
 				//var pcmbuffer []byte
-				decoder := opus.NewDecoder()
-				if err != nil {
-					fmt.Println("opus.NewDecoder err:", err)
-				}
-				//fmt.Println("decoder, err :", decoder, err)
+				// decoder := opus.NewDecoder()
+				// if err != nil {
+				// 	fmt.Println("opus.NewDecoder err:", err)
+				// }
+				// fmt.Println("decoder, err :", decoder, err)
 
-				//var pcm []byte
-				pcm := make([]byte, 960*2)
+				// var pcm []byte
+				// pcm := make([]byte, 960*2)
 				bandwith, isStereo, err := decoder.Decode(pkt.Payload, pcm)
 				if err != nil {
 					log.Println("decoder.Decode err:", err)
@@ -139,13 +188,13 @@ func wsVad(c echo.Context) error {
 				}
 				fmt.Println("decoder.Decode:", bandwith, isStereo, err)
 
-				//int16SliceToBytes(pcmsamples)
-				//activeVoice, err := vad.Process(48000, pcmbuffer)
-				//if err != nil {
-				//	log.Println("vad.Process err:", activeVoice, err)
-				//	break
-				//}
-				//log.Println("vad.Process:", activeVoice, err)
+				// //int16SliceToBytes(pcmsamples)
+				// //activeVoice, err := vad.Process(48000, pcmbuffer)
+				// //if err != nil {
+				// //	log.Println("vad.Process err:", activeVoice, err)
+				// //	break
+				// //}
+				// //log.Println("vad.Process:", activeVoice, err)
 
 				err = localTrack.WriteRTP(pkt)
 				if err != nil {
@@ -219,6 +268,8 @@ func wsVad(c echo.Context) error {
 			}
 		}
 	}
+
+	// f.Close()
 
 	return nil
 }

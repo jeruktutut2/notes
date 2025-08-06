@@ -72,6 +72,18 @@
             console.log(params.codecs);
         });
 
+        // pc.getStats(null).then(stats => {
+        //     stats.forEach(report => {
+        //         if (report.type === 'inbound-rtp' || report.type === 'outbound-rtp') {
+        //             const codec = stats.get(report.codecId);
+        //             if (codec && codec.mimeType.includes('audio')) {
+        //                 console.log('Codec Audio yang digunakan:', codec.mimeType);
+        //                 // Output bisa: "audio/opus"
+        //             }
+        //         }
+        //     });
+        // });
+
         try {
             const constraints = {
                 audio: {
@@ -94,7 +106,7 @@
             status.textContent = "Microphone access granted";
 
             const offer = await pc.createOffer();
-            console.log("offer.sdp:", offer.sdp)
+            // console.log("offer.sdp:", offer.sdp)
             await pc.setLocalDescription(offer);
 
             socket.send(JSON.stringify({
