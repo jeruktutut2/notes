@@ -3,6 +3,8 @@ package main
 import (
 	"context"
 	"log"
+	"note-golang-fiberv3-timeout/routes"
+	"note-golang-fiberv3-timeout/utils"
 	"os"
 	"os/signal"
 	"time"
@@ -17,6 +19,9 @@ func main() {
 		ServerHeader:  "Fiber",
 		AppName:       "Test App v1.0.1",
 	})
+
+	postgresUtil := utils.NewPostgresUtil()
+	routes.SetTestRoute(app, postgresUtil)
 	// fmt.Println(app)
 	ctx, stop := signal.NotifyContext(context.Background(), os.Interrupt)
 	defer stop()

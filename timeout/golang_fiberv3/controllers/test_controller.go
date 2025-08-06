@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"net/http"
 	"note-golang-fiberv3-timeout/services"
 
 	"github.com/gofiber/fiber/v3"
@@ -22,5 +23,15 @@ func NewTestController(testService services.TestService) TestController {
 }
 
 func (controller *testController) Test1WithTx(c fiber.Ctx) error {
-	controller.TestService.TestWithTx()
+	result := controller.TestService.TestWithTx(c.RequestCtx())
+	return c.Status(http.StatusOK).JSON(fiber.Map{
+		"respnose": result,
+	})
+}
+
+func (controller *testController) Test1WithoutTx(c fiber.Ctx) error {
+	result := controller.TestService.TestWithoutTx(c.RequestCtx())
+	return c.Status(http.StatusOK).JSON(fiber.Map{
+		"response": result,
+	})
 }
