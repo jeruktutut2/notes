@@ -48,9 +48,6 @@ async def websocket_endpoint(websocket: WebSocket):
                         print(f"Unsupported sample rate: {sample_rate}")
                         # return frame
                     print("Sample rate:", sample_rate)
-        
-                    # pcm = frame.to_ndarray().tobytes()
-                    # sample_rate = frame.sample_rate
 
                     # Convert to NumPy array (shape: (channels, samples))
                     pcm_array = frame.to_ndarray()
@@ -68,15 +65,6 @@ async def websocket_endpoint(websocket: WebSocket):
 
                     # Convert to bytes
                     pcm_bytes = mono_pcm.tobytes()
-
-                    # samples = len(pcm) // 2  # 2 bytes per sample
-                    # duration_ms = int((samples / sample_rate) * 1000)
-
-                    # if duration_ms in [10, 20, 30] and sample_rate in [8000, 16000, 32000, 48000]:
-                    #     is_speech = vad.is_speech(pcm, sample_rate)
-                    #     print("Voice Detected" if is_speech else "Silence")
-                    # else:
-                    #     print(f"Unsupported frame duration/sample_rate: {duration_ms}ms, {sample_rate}Hz")
 
                     # 30ms chunk = (sample_rate * 30 / 1000) samples
                     bytes_per_sample = 2  # 16-bit
