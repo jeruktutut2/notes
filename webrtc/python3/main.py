@@ -77,7 +77,6 @@ async def websocket_endpoint(websocket: WebSocket):
         # Handle ICE candidates from client
         while True:
             msg = json.loads(await websocket.receive_text())
-            # print(f"msg: {msg}")
 
             if msg["type"] == "offer":
                 offer = RTCSessionDescription(sdp=msg["sdp"], type=msg["type"])
