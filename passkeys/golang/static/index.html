@@ -1,0 +1,165 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Passkey demo</title>
+  <style>
+    body { font-family: system-ui, sans-serif; padding: 2rem; max-width: 700px; margin: auto; }
+    input, button { padding: .5rem; margin: .25rem 0; width: 100%; box-sizing: border-box; }
+  </style>
+</head>
+<body>
+  <h1>Passkey demo (WebAuthn)</h1>
+  <input id="username" placeholder="username (e.g. alice)" />
+  <button id="register">Register (create passkey)</button>
+  <button id="login">Login (use passkey)</button>
+
+<script>
+// utils: base64url <-> ArrayBuffer
+function b64ToBuf(base64url) {
+  // base64url -> base64
+  base64url = base64url.replace(/-/g, '+').replace(/_/g, '/');
+  // pad
+  while (base64url.length % 4) base64url += '=';
+  const str = atob(base64url);
+  const buf = new Uint8Array(str.length);
+  for (let i=0;i<str.length;i++) buf[i] = str.charCodeAt(i);
+  return buf.buffer;
+}
+function bufToB64(buffer) {
+  const bytes = new Uint8Array(buffer);
+  let str = "";
+  for (let i=0;i<bytes.byteLength;i++) str += String.fromCharCode(bytes[i]);
+  return btoa(str).replace(/\+/g,'-').replace(/\//g,'_').replace(/=+$/,'');
+}
+
+// Convert server JSON options -> options with ArrayBuffers where needed
+function preformatCreateOptions(optionsFromServer) {
+  optionsFromServer.challenge = b64ToBuf(optionsFromServer.challenge);
+  optionsFromServer.user.id = b64ToBuf(optionsFromServer.user.id);
+  if (optionsFromServer.excludeCredentials) {
+    optionsFromServer.excludeCredentials = optionsFromServer.excludeCredentials.map(c => {
+      c.id = b64ToBuf(c.id); return c;
+    });
+  }
+  return optionsFromServer;
+}
+function preformatGetOptions(optionsFromServer) {
+  optionsFromServer.challenge = b64ToBuf(optionsFromServer.challenge);
+  if (optionsFromServer.allowCredentials) {
+    optionsFromServer.allowCredentials = optionsFromServer.allowCredentials.map(c => {
+      c.id = b64ToBuf(c.id); return c;
+    });
+  }
+  return optionsFromServer;
+}
+
+async function registerFlow(username) {
+  // begin
+  const begin = await fetch('/register/begin', {
+    method: 'POST', headers: {'Content-Type':'application/json'},
+    body: JSON.stringify({username})
+  }).then(r => r.json());
+
+  const publicKey = preformatCreateOptions(begin);
+  const credential = await navigator.credentials.create({ publicKey });
+
+  // transform credential to JSON-friendly format (base64url)
+  const attResp = credential.response;
+  const clientDataJSON = bufToB64(attResp.clientDataJSON);
+  const attestationObject = bufToB64(attResp.attestationObject);
+
+  const send = {
+    id: credential.id,
+    rawId: bufToB64(credential.rawId),
+    type: credential.type,
+    response: { clientDataJSON, attestationObject },
+    // clientExtensions: credential.getClientExtensionResults()
+  };
+
+  const res = await fetch('/register/finish', {
+    method:'POST', headers: {'Content-Type':'application/json'},
+    body: JSON.stringify({ username, credential: send })
+  }).then(r => r.json());
+
+  alert("Register result: " + JSON.stringify(res));
+}
+
+async function loginFlow(username) {
+  const begin = await fetch('/login/begin', {
+    method: 'POST', headers: {'Content-Type':'application/json'},
+    body: JSON.stringify({username})
+  }).then(r => r.json());
+
+  const publicKey = preformatGetOptions(begin);
+  const assertion = await navigator.credentials.get({ publicKey });
+
+  const authResp = assertion.response;
+  const clientDataJSON = bufToB64(authResp.clientDataJSON);
+  const authenticatorData = bufToB64(authResp.authenticatorData);
+  const signature = bufToB64(authResp.signature);
+  const userHandle = authResp.userHandle ? bufToB64(authResp.userHandle) : null;
+
+  const send = {
+    id: assertion.id,
+    rawId: bufToB64(assertion.rawId),
+    type: assertion.type,
+    response: { clientDataJSON, authenticatorData, signature, userHandle },
+  };
+
+  const res = await fetch('/login/finish', {
+    method:'POST', headers: {'Content-Type':'application/json'},
+    body: JSON.stringify({ username, credential: send })
+  }).then(r => r.json());
+
+  alert("Login result: " + JSON.stringify(res));
+}
+
+document.getElementById('register').addEventListener('click', async () => {
+  const username = document.getElementById('username').value.trim();
+  if(!username) { alert('enter username'); return; }
+  try { 
+    // await registerFlow(username);
+
+    const response = await fetch('/register/begin', {
+      method: 'POST', headers: {'Content-Type':'application/json'},
+      body: JSON.stringify({username})
+    })
+    // console.log("response:", await response.json())
+    const responseJson = await response.json()
+    // console.log(creation.creation)
+    const creation = responseJson.creation
+    // console.log("creation2:", creation)
+    // console.log("creation.publicKey:", creation.publicKey)
+    // console.log(creation)
+    // console.log(creation.publicKey)
+    creation.publicKey.challenge = b64ToBuf(creation.publicKey.challenge)
+    creation.publicKey.user.id = b64ToBuf(creation.publicKey.user.id)
+    if (creation.publicKey.excludeCredentials) {
+      creation.publicKey.excludeCredentials = creation.publicKey.excludeCredentials.map(c => {
+        c.id = b64ToBuf(c.id); return c;
+      });
+    }
+    // console.log(creation)
+    const publicKey = creation.publicKey
+    const credential = await navigator.credentials.create({ publicKey: publicKey });
+    console.log("credential:", credential)
+    
+
+  } catch(e) { 
+    alert('register error: '+e); 
+    console.error(e); 
+  }
+});
+document.getElementById('login').addEventListener('click', async () => {
+  const username = document.getElementById('username').value.trim();
+  if(!username) { alert('enter username'); return; }
+  try { 
+    await loginFlow(username); 
+  } catch(e) { 
+    alert('login error: '+e); console.error(e); 
+  }
+});
+</script>
+</body>
+</html>
