@@ -1,0 +1,7 @@
+version: '3.8'
+services:
+  jaeger:
+    image: jaegertracing/all-in-one:latest
+    ports:
+      - "16686:16686" # Web UI Jaeger
+      - "4318:4318"   # OTLP HTTP receiver
