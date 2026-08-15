@@ -1,0 +1,24 @@
+{
+  "Debug": true,
+  "EnableAudit": true,
+  "ListenAddress": ":3000",
+  "MySQLTopologyUser": "orc_client",
+  "MySQLTopologyPassword": "orc_password",
+  "MySQLTopologyPort": 3306,
+  "BackendDB": "sqlite3",
+  "SQLite3DataFile": "/var/lib/orchestrator/orchestrator.sqlite",
+  "InstancePollSeconds": 3,
+  "DiscoverByShowSlaveHosts": true,
+  "DetectClusterAliasFromMaster": true,
+  "DetectInstanceAliasInConfig": true,
+  "PhysicalAddressHostnameResolveMethod": "none",
+  "ApplyMySQLPromotionAfterMasterFailover": true,
+  "PreventCrossDataCenterMasterFailover": false,
+  "FailMasterVerificationIfTopologyStale": false,
+  "RecoverMasterCluster": true,
+  "RecoverIntermediateMasterCluster": true,
+  "DelayMasterRecoveryIfTopologyStaleInSeconds": 5,
+  "PostMasterFailoverProcesses": [
+    "echo 'Orchestrator: Master failover completed. Promoted {successorHost}' >> /tmp/orchestrator_failover.log"
+  ]
+}

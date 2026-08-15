@@ -1,0 +1,165 @@
+services:
+  mysql-master:
+    image: mysql:8.0
+    container_name: mysql-master
+    hostname: mysql-master
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpassword
+      MYSQL_DATABASE: company_db
+    ports:
+      - "3306:3306"
+    volumes:
+      - ./config/master.cnf:/etc/mysql/conf.d/master.cnf:ro
+      - ./init/01-master-init.sql:/docker-entrypoint-initdb.d/01-master-init.sql:ro
+    healthcheck:
+      test: ["CMD-SHELL", "mysqladmin ping -h localhost -u root -prootpassword || exit 1"]
+      interval: 3s
+      timeout: 5s
+      retries: 20
+      start_period: 25s
+    networks:
+      - mysql-net
+
+  mysql-replica1:
+    image: mysql:8.0
+    container_name: mysql-replica1
+    hostname: mysql-replica1
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpassword
+    ports:
+      - "3307:3306"
+    volumes:
+      - ./config/replica1.cnf:/etc/mysql/conf.d/replica1.cnf:ro
+    depends_on:
+      mysql-master:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "mysqladmin ping -h localhost -u root -prootpassword || exit 1"]
+      interval: 3s
+      timeout: 5s
+      retries: 20
+      start_period: 25s
+    networks:
+      - mysql-net
+
+  mysql-replica2:
+    image: mysql:8.0
+    container_name: mysql-replica2
+    hostname: mysql-replica2
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpassword
+    ports:
+      - "3308:3306"
+    volumes:
+      - ./config/replica2.cnf:/etc/mysql/conf.d/replica2.cnf:ro
+    healthcheck:
+      test: ["CMD-SHELL", "mysqladmin ping -h localhost -u root -prootpassword || exit 1"]
+      interval: 3s
+      timeout: 5s
+      retries: 20
+      start_period: 25s
+    networks:
+      - mysql-net
+
+  mysql-replica3:
+    image: mysql:8.0
+    container_name: mysql-replica3
+    hostname: mysql-replica3
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpassword
+    ports:
+      - "3309:3306"
+    volumes:
+      - ./config/replica3.cnf:/etc/mysql/conf.d/replica3.cnf:ro
+    healthcheck:
+      test: ["CMD-SHELL", "mysqladmin ping -h localhost -u root -prootpassword || exit 1"]
+      interval: 3s
+      timeout: 5s
+      retries: 20
+      start_period: 25s
+    networks:
+      - mysql-net
+
+  orchestrator:
+    image: openark/orchestrator:v3.2.6
+    container_name: orchestrator
+    hostname: orchestrator
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./config/orchestrator.json:/etc/orchestrator.conf.json:ro
+    depends_on:
+      mysql-master:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "wget --no-verbose --tries=1 --spider http://localhost:3000/api/health || exit 1"]
+      interval: 3s
+      timeout: 5s
+      retries: 20
+      start_period: 10s
+    networks:
+      - mysql-net
+
+  proxysql:
+    image: proxysql/proxysql:2.5.5
+    container_name: proxysql
+    hostname: proxysql
+    ports:
+      - "6033:6033"
+      - "6032:6032"
+    volumes:
+      - ./config/proxysql.cnf:/etc/proxysql.cnf:ro
+    healthcheck:
+      test: ["CMD-SHELL", "mysql -h 127.0.0.1 -P 6032 -u admin -padmin -e 'SELECT 1' || exit 1"]
+      interval: 3s
+      timeout: 5s
+      retries: 20
+      start_period: 5s
+    networks:
+      - mysql-net
+
+  haproxy:
+    image: haproxy:2.8-alpine
+    container_name: haproxy
+    hostname: haproxy
+    ports:
+      - "3306:3306"
+      - "8404:8404"
+    volumes:
+      - ./config/haproxy.cfg:/usr/local/etc/haproxy/haproxy.cfg:ro
+    depends_on:
+      proxysql:
+        condition: service_healthy
+    networks:
+      - mysql-net
+
+  golang-app:
+    build:
+      context: ./app
+      dockerfile: Dockerfile
+    container_name: golang-app
+    hostname: golang-app
+    environment:
+      PORT: "8080"
+      DB_HOST: "haproxy"
+      DB_PORT: "3306"
+      DB_USER: "root"
+      DB_PASS: "rootpassword"
+      DB_NAME: "company_db"
+    ports:
+      - "8080:8080"
+    depends_on:
+      haproxy:
+        condition: service_started
+    healthcheck:
+      test: ["CMD-SHELL", "wget --no-verbose --tries=1 --spider http://localhost:8080/api/health || exit 1"]
+      interval: 3s
+      timeout: 5s
+      retries: 20
+      start_period: 5s
+    networks:
+      - mysql-net
+
+networks:
+  mysql-net:
+    driver: bridge
