@@ -1,0 +1,205 @@
+services:
+  # ==========================================
+  # CITUS COORDINATOR NODE
+  # Accepts queries, manages metadata & routing
+  # ==========================================
+  coordinator:
+    image: citusdata/citus:12.1
+    container_name: citus_coordinator
+    hostname: coordinator
+    command: -c wal_level=logical -c max_wal_senders=10 -c max_replication_slots=10
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgrespassword
+      PGPASSWORD: postgrespassword
+      POSTGRES_DB: citus_db
+      POSTGRES_HOST_AUTH_METHOD: trust
+    ports:
+      - "5432:5432"
+    volumes:
+      - ./scripts/init-db.sql:/docker-entrypoint-initdb.d/init.sql:ro
+      - coordinator_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d citus_db"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    networks:
+      - citus_net
+
+  # ==========================================
+  # CITUS WORKER NODES (1 to 5)
+  # Hold sharded table data
+  # ==========================================
+  worker1:
+    image: citusdata/citus:12.1
+    container_name: citus_worker1
+    hostname: worker1
+    command: -c wal_level=logical -c max_wal_senders=10 -c max_replication_slots=10
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgrespassword
+      PGPASSWORD: postgrespassword
+      POSTGRES_DB: citus_db
+      POSTGRES_HOST_AUTH_METHOD: trust
+    volumes:
+      - worker1_data:/var/lib/postgresql/data
+    depends_on:
+      coordinator:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d citus_db"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    networks:
+      - citus_net
+
+  worker2:
+    image: citusdata/citus:12.1
+    container_name: citus_worker2
+    hostname: worker2
+    command: -c wal_level=logical -c max_wal_senders=10 -c max_replication_slots=10
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgrespassword
+      PGPASSWORD: postgrespassword
+      POSTGRES_DB: citus_db
+      POSTGRES_HOST_AUTH_METHOD: trust
+    volumes:
+      - worker2_data:/var/lib/postgresql/data
+    depends_on:
+      coordinator:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d citus_db"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    networks:
+      - citus_net
+
+  worker3:
+    image: citusdata/citus:12.1
+    container_name: citus_worker3
+    hostname: worker3
+    command: -c wal_level=logical -c max_wal_senders=10 -c max_replication_slots=10
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgrespassword
+      PGPASSWORD: postgrespassword
+      POSTGRES_DB: citus_db
+      POSTGRES_HOST_AUTH_METHOD: trust
+    volumes:
+      - worker3_data:/var/lib/postgresql/data
+    depends_on:
+      coordinator:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d citus_db"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    networks:
+      - citus_net
+
+  worker4:
+    image: citusdata/citus:12.1
+    container_name: citus_worker4
+    hostname: worker4
+    command: -c wal_level=logical -c max_wal_senders=10 -c max_replication_slots=10
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgrespassword
+      PGPASSWORD: postgrespassword
+      POSTGRES_DB: citus_db
+      POSTGRES_HOST_AUTH_METHOD: trust
+    volumes:
+      - worker4_data:/var/lib/postgresql/data
+    depends_on:
+      coordinator:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d citus_db"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    networks:
+      - citus_net
+
+  worker5:
+    image: citusdata/citus:12.1
+    container_name: citus_worker5
+    hostname: worker5
+    command: -c wal_level=logical -c max_wal_senders=10 -c max_replication_slots=10
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgrespassword
+      PGPASSWORD: postgrespassword
+      POSTGRES_DB: citus_db
+      POSTGRES_HOST_AUTH_METHOD: trust
+    volumes:
+      - worker5_data:/var/lib/postgresql/data
+    depends_on:
+      coordinator:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d citus_db"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    networks:
+      - citus_net
+
+  # ==========================================
+  # PGBOUNCER CONNECTION POOLER
+  # Standard frontend proxy for client traffic
+  # ==========================================
+  pgbouncer:
+    image: edoburu/pgbouncer:latest
+    container_name: citus_pgbouncer
+    ports:
+      - "6432:6432"
+    volumes:
+      - ./config/pgbouncer/pgbouncer.ini:/etc/pgbouncer/pgbouncer.ini:ro
+      - ./config/pgbouncer/userlist.txt:/etc/pgbouncer/userlist.txt:ro
+    depends_on:
+      coordinator:
+        condition: service_healthy
+    networks:
+      - citus_net
+
+  # ==========================================
+  # GOLANG ECHO REST API DEMO APP
+  # Demonstration app connecting via PgBouncer
+  # ==========================================
+  app:
+    build:
+      context: ./app
+      dockerfile: Dockerfile
+    container_name: citus_echo_app
+    ports:
+      - "8080:8080"
+    environment:
+      DB_HOST: pgbouncer
+      DB_PORT: 6432
+      DB_USER: postgres
+      DB_PASSWORD: postgrespassword
+      DB_NAME: citus_db
+    depends_on:
+      pgbouncer:
+        condition: service_started
+    networks:
+      - citus_net
+
+networks:
+  citus_net:
+    driver: bridge
+
+volumes:
+  coordinator_data:
+  worker1_data:
+  worker2_data:
+  worker3_data:
+  worker4_data:
+  worker5_data:

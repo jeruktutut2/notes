@@ -1,0 +1,18 @@
+FROM postgres:15-alpine
+
+RUN apk add --no-cache python3 py3-pip py3-psycopg2 py3-yaml curl bash shadow && \
+    pip install --no-cache-dir --break-system-packages patroni[etcd3]
+
+# Create patroni directory
+RUN mkdir -p /patroni /var/lib/postgresql/data && \
+    chown -R postgres:postgres /patroni /var/lib/postgresql/data
+
+COPY config/patroni/entrypoint.sh /entrypoint.sh
+COPY config/patroni/post_init.sh /patroni/post_init.sh
+COPY config/patroni/patroni.yml.template /patroni/patroni.yml.template
+
+USER root
+RUN chmod +x /entrypoint.sh /patroni/post_init.sh
+
+USER postgres
+ENTRYPOINT ["/entrypoint.sh"]

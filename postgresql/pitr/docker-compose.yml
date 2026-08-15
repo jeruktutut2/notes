@@ -1,0 +1,74 @@
+version: '3.8'
+
+services:
+  db:
+    image: postgres:16
+    container_name: pitr_postgres
+    environment:
+      POSTGRES_USER: myuser
+      POSTGRES_PASSWORD: mypassword
+      POSTGRES_DB: mydb
+    volumes:
+      - ./data:/var/lib/postgresql/data
+      - ./archive:/var/lib/postgresql/archive
+      - ./backup:/var/lib/postgresql/backup
+      - ./postgres/postgresql.conf:/etc/postgresql/postgresql.conf
+      - ./postgres/pg_hba.conf:/etc/postgresql/pg_hba.conf
+    command: postgres -c 'config_file=/etc/postgresql/postgresql.conf' -c 'hba_file=/etc/postgresql/pg_hba.conf'
+    ports:
+      - "5432:5432"
+    networks:
+      - pitr_net
+
+  replica:
+    image: postgres:16
+    container_name: pitr_replica
+    environment:
+      POSTGRES_USER: myuser
+      POSTGRES_PASSWORD: mypassword
+      POSTGRES_DB: mydb
+    volumes:
+      - ./replica_data:/var/lib/postgresql/data
+      - ./postgres/postgresql.conf:/etc/postgresql/postgresql.conf
+      - ./postgres/pg_hba.conf:/etc/postgresql/pg_hba.conf
+    command: postgres -c 'config_file=/etc/postgresql/postgresql.conf' -c 'hba_file=/etc/postgresql/pg_hba.conf'
+    ports:
+      - "5433:5432"
+    depends_on:
+      - db
+    networks:
+      - pitr_net
+
+  pgbouncer:
+    image: bitnami/pgbouncer:latest
+    container_name: pitr_pgbouncer
+    environment:
+      PGBOUNCER_DATABASE: mydb
+      PGBOUNCER_PORT: 6432
+      PGBOUNCER_EXTRA_FLAGS: "--auth-type=plain"
+    volumes:
+      - ./pgbouncer/pgbouncer.ini:/opt/bitnami/pgbouncer/conf/pgbouncer.ini
+      - ./pgbouncer/userlist.txt:/opt/bitnami/pgbouncer/conf/userlist.txt
+    ports:
+      - "6432:6432"
+    depends_on:
+      - db
+    networks:
+      - pitr_net
+
+  api:
+    build: ./app
+    container_name: pitr_api
+    environment:
+      # Terhubung ke pgbouncer, bukan langsung ke db
+      DATABASE_URL: "postgres://myuser:mypassword@pitr_pgbouncer:6432/mydb"
+    ports:
+      - "8080:8080"
+    depends_on:
+      - pgbouncer
+    networks:
+      - pitr_net
+
+networks:
+  pitr_net:
+    driver: bridge

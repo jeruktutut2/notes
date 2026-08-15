@@ -1,0 +1,23 @@
+# Ignore binary output
+bin/
+*.exe
+
+# Go
+vendor/
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Environment
+.env
+.env.local
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Docker volume data (jangan commit)
+pgdata/

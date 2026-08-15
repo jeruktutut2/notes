@@ -1,0 +1,3 @@
+"appuser" "apppassword"
+"postgres" "postgres"
+"replicator" "replica_password"

@@ -1,0 +1,137 @@
+services:
+  etcd:
+    image: quay.io/coreos/etcd:v3.5.9
+    container_name: pg_cluster_etcd
+    environment:
+      - ETCD_LISTEN_CLIENT_URLS=http://0.0.0.0:2379
+      - ETCD_ADVERTISE_CLIENT_URLS=http://etcd:2379
+      - ETCD_ALLOW_NONE_AUTHENTICATION=yes
+    ports:
+      - "2379:2379"
+    networks:
+      - pg_net
+
+  postgres_node1:
+    build:
+      context: .
+      dockerfile: Dockerfile.patroni
+    container_name: pg_cluster_node1
+    environment:
+      PATRONI_NODE_NAME: postgres_node1
+    volumes:
+      - node1_data:/var/lib/postgresql/data
+    ports:
+      - "54320:5432"
+      - "8008:8008"
+    depends_on:
+      - etcd
+    networks:
+      - pg_net
+
+  postgres_node2:
+    build:
+      context: .
+      dockerfile: Dockerfile.patroni
+    container_name: pg_cluster_node2
+    environment:
+      PATRONI_NODE_NAME: postgres_node2
+    volumes:
+      - node2_data:/var/lib/postgresql/data
+    ports:
+      - "54321:5432"
+      - "8009:8008"
+    depends_on:
+      - etcd
+    networks:
+      - pg_net
+
+  postgres_node3:
+    build:
+      context: .
+      dockerfile: Dockerfile.patroni
+    container_name: pg_cluster_node3
+    environment:
+      PATRONI_NODE_NAME: postgres_node3
+    volumes:
+      - node3_data:/var/lib/postgresql/data
+    ports:
+      - "54322:5432"
+      - "8010:8008"
+    depends_on:
+      - etcd
+    networks:
+      - pg_net
+
+  postgres_node4:
+    build:
+      context: .
+      dockerfile: Dockerfile.patroni
+    container_name: pg_cluster_node4
+    profiles:
+      - scale
+    environment:
+      PATRONI_NODE_NAME: postgres_node4
+    volumes:
+      - node4_data:/var/lib/postgresql/data
+    ports:
+      - "54323:5432"
+      - "8011:8008"
+    depends_on:
+      - etcd
+    networks:
+      - pg_net
+
+  haproxy:
+    image: haproxy:2.8-alpine
+    container_name: pg_cluster_haproxy
+    ports:
+      - "5000:5000"
+      - "5001:5001"
+      - "7000:7000"
+    volumes:
+      - ./config/haproxy/haproxy.cfg:/usr/local/etc/haproxy/haproxy.cfg:ro
+    depends_on:
+      - postgres_node1
+      - postgres_node2
+      - postgres_node3
+    networks:
+      - pg_net
+
+  pgbouncer:
+    image: edoburu/pgbouncer:latest
+    container_name: pg_cluster_pgbouncer
+    ports:
+      - "6433:6432"
+    volumes:
+      - ./config/pgbouncer/pgbouncer.ini:/etc/pgbouncer/pgbouncer.ini:ro
+      - ./config/pgbouncer/userlist.txt:/etc/pgbouncer/userlist.txt:ro
+    depends_on:
+      - haproxy
+    networks:
+      - pg_net
+
+  app_echo:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: pg_cluster_app_echo
+    ports:
+      - "8085:8080"
+    environment:
+      DB_WRITE_DSN: "postgres://appuser:apppassword@pgbouncer:6432/db_write?sslmode=disable"
+      DB_READ_DSN: "postgres://appuser:apppassword@pgbouncer:6432/db_read?sslmode=disable"
+    depends_on:
+      - pgbouncer
+    networks:
+      - pg_net
+
+networks:
+  pg_net:
+    driver: bridge
+
+volumes:
+  node1_data:
+  node2_data:
+  node3_data:
+  node4_data:
+

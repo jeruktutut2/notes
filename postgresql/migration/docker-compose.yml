@@ -1,0 +1,149 @@
+# ==========================================
+# DOCKER COMPOSE
+# ==========================================
+# Arsitektur:
+#   App (Echo v5) --> PgBouncer (port 6432) --> PostgreSQL (port 5432)
+#   Migration CLI --------------------------> PostgreSQL (port 5432)
+#
+# PENTING: Migration CLI langsung ke PostgreSQL, BUKAN melalui PgBouncer!
+# Karena golang-migrate menggunakan advisory lock yang tidak kompatibel
+# dengan PgBouncer mode transaction pooling.
+# ==========================================
+
+services:
+  # ==========================================
+  # PostgreSQL - Database Server
+  # ==========================================
+  postgres:
+    image: postgres:16-alpine
+    container_name: migration_postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: migration_db
+      # Gunakan md5 agar kompatibel dengan PgBouncer
+      POSTGRES_HOST_AUTH_METHOD: md5
+      POSTGRES_INITDB_ARGS: "--auth-host=md5"
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d migration_db"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+      start_period: 10s
+    networks:
+      - migration_net
+
+  # ==========================================
+  # PgBouncer - Connection Pooler
+  # ==========================================
+  # PgBouncer berfungsi sebagai proxy antara aplikasi dan PostgreSQL.
+  # Manfaat:
+  # 1. Mengurangi overhead pembuatan koneksi baru
+  # 2. Membatasi jumlah koneksi ke PostgreSQL
+  # 3. Meningkatkan performa pada beban tinggi
+  # ==========================================
+  pgbouncer:
+    image: edoburu/pgbouncer:latest
+    container_name: migration_pgbouncer
+    restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      DB_USER: postgres
+      DB_PASSWORD: postgres
+      DB_HOST: postgres
+      DB_NAME: migration_db
+      POOL_MODE: transaction
+      MAX_CLIENT_CONN: 200
+      DEFAULT_POOL_SIZE: 20
+      ADMIN_USERS: postgres
+    ports:
+      - "6432:6432"
+    volumes:
+      - ./pgbouncer/pgbouncer.ini:/etc/pgbouncer/pgbouncer.ini:ro
+      - ./pgbouncer/userlist.txt:/etc/pgbouncer/userlist.txt:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -h localhost -p 6432 -U postgres || true"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - migration_net
+
+  # ==========================================
+  # Migration - Menjalankan migration via CLI
+  # ==========================================
+  # Service ini hanya untuk menjalankan migration dari CLI.
+  # Koneksi LANGSUNG ke PostgreSQL (port 5432), BUKAN PgBouncer.
+  # ==========================================
+  migrate:
+    image: migrate/migrate:latest
+    container_name: migration_cli
+    depends_on:
+      postgres:
+        condition: service_healthy
+    volumes:
+      - ./migrations/sql:/migrations:ro
+    networks:
+      - migration_net
+    # Default: jalankan migration up
+    # Bisa di-override via command line
+    entrypoint: []
+    command: >
+      migrate -path=/migrations
+              -database "postgres://postgres:postgres@postgres:5432/migration_db?sslmode=disable"
+              up
+    # Profiles agar tidak otomatis start saat `docker compose up`
+    profiles:
+      - tools
+
+  # ==========================================
+  # App - Go Application (Echo v5)
+  # ==========================================
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: migration_app
+    restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_healthy
+      pgbouncer:
+        condition: service_started
+    environment:
+      SERVER_PORT: "8080"
+      # Koneksi via PgBouncer untuk operasi normal
+      DB_HOST: pgbouncer
+      DB_PORT: "6432"
+      DB_USER: postgres
+      DB_PASSWORD: postgres
+      DB_NAME: migration_db
+      DB_SSLMODE: disable
+      # Koneksi langsung ke PostgreSQL untuk migration
+      MIGRATE_DB_HOST: postgres
+      MIGRATE_DB_PORT: "5432"
+    ports:
+      - "8080:8080"
+    networks:
+      - migration_net
+
+# ==========================================
+# Volumes
+# ==========================================
+volumes:
+  pgdata:
+    driver: local
+
+# ==========================================
+# Networks
+# ==========================================
+networks:
+  migration_net:
+    driver: bridge

@@ -1,0 +1,196 @@
+# ============================================
+# Data Recovery Center - Docker Compose
+# ============================================
+# Architecture:
+#   App → PgBouncer-DC → PostgreSQL DC (Primary)
+#                              ↓ WAL Streaming
+#                         PostgreSQL DRC (Standby)
+#                              ↑
+#         PgBouncer-DRC ───────┘
+# ============================================
+
+services:
+  # ============================================
+  # DATA CENTER (DC) - PostgreSQL Primary
+  # Peran: Database utama untuk operasi harian
+  # ============================================
+  pg-dc:
+    image: postgres:16-alpine
+    container_name: pg-dc
+    hostname: pg-dc
+    environment:
+      POSTGRES_DB: appdb
+      POSTGRES_USER: appuser
+      POSTGRES_PASSWORD: apppassword
+      POSTGRES_INITDB_ARGS: "--auth-host=scram-sha-256 --auth-local=trust"
+    ports:
+      - "5432:5432"
+    volumes:
+      - pg_dc_data:/var/lib/postgresql/data
+      - ./db/init-primary.sh:/docker-entrypoint-initdb.d/01-init.sh
+      - ./db/init-primary.sql:/docker-entrypoint-initdb.d/02-schema.sql
+    command: >
+      postgres
+        -c wal_level=replica
+        -c max_wal_senders=10
+        -c max_replication_slots=10
+        -c hot_standby=on
+        -c wal_log_hints=on
+        -c archive_mode=on
+        -c archive_command='true'
+        -c max_connections=200
+        -c shared_buffers=128MB
+        -c effective_cache_size=256MB
+        -c log_statement=all
+        -c log_replication_commands=on
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U appuser -d appdb"]
+      interval: 5s
+      timeout: 5s
+      retries: 30
+      start_period: 10s
+    networks:
+      - drc-network
+    restart: unless-stopped
+
+  # ============================================
+  # DATA RECOVERY CENTER (DRC) - PostgreSQL Standby
+  # Peran: Replica standby, siap mengambil alih jika DC down
+  # ============================================
+  pg-drc:
+    image: postgres:16-alpine
+    container_name: pg-drc
+    hostname: pg-drc
+    environment:
+      PGDATA: /var/lib/postgresql/data/pgdata
+      POSTGRES_PASSWORD: apppassword
+    ports:
+      - "5433:5432"
+    volumes:
+      - pg_drc_data:/var/lib/postgresql/data
+      - ./db/setup-standby.sh:/setup-standby.sh
+    entrypoint: ["bash", "/setup-standby.sh"]
+    depends_on:
+      pg-dc:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U appuser -d appdb"]
+      interval: 5s
+      timeout: 5s
+      retries: 60
+      start_period: 30s
+    networks:
+      - drc-network
+    restart: unless-stopped
+
+  # ============================================
+  # PGBOUNCER DC - Connection Pooler untuk Data Center
+  # Peran: Mengelola koneksi antara App dan PostgreSQL DC
+  # ============================================
+  pgbouncer-dc:
+    build:
+      context: ./pgbouncer
+      dockerfile: Dockerfile
+    container_name: pgbouncer-dc
+    hostname: pgbouncer-dc
+    ports:
+      - "6432:6432"
+    volumes:
+      - ./pgbouncer/pgbouncer-dc.ini:/etc/pgbouncer/pgbouncer.ini:ro
+      - ./pgbouncer/userlist.txt:/etc/pgbouncer/userlist.txt:ro
+    depends_on:
+      pg-dc:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -h 127.0.0.1 -p 6432 || exit 1"]
+      interval: 5s
+      timeout: 5s
+      retries: 15
+      start_period: 5s
+    networks:
+      - drc-network
+    restart: unless-stopped
+
+  # ============================================
+  # PGBOUNCER DRC - Connection Pooler untuk DRC
+  # Peran: Mengelola koneksi ke PostgreSQL DRC
+  # ============================================
+  pgbouncer-drc:
+    build:
+      context: ./pgbouncer
+      dockerfile: Dockerfile
+    container_name: pgbouncer-drc
+    hostname: pgbouncer-drc
+    ports:
+      - "6433:6432"
+    volumes:
+      - ./pgbouncer/pgbouncer-drc.ini:/etc/pgbouncer/pgbouncer.ini:ro
+      - ./pgbouncer/userlist.txt:/etc/pgbouncer/userlist.txt:ro
+    depends_on:
+      pg-drc:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -h 127.0.0.1 -p 6432 || exit 1"]
+      interval: 5s
+      timeout: 5s
+      retries: 15
+      start_period: 5s
+    networks:
+      - drc-network
+    restart: unless-stopped
+
+  # ============================================
+  # APPLICATION - Golang Echo v5
+  # Peran: REST API yang terhubung ke DC/DRC via PgBouncer
+  # ============================================
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile.app
+    container_name: drc-app
+    hostname: drc-app
+    environment:
+      APP_PORT: "8080"
+      # DC Connection (via PgBouncer)
+      DC_DB_HOST: pgbouncer-dc
+      DC_DB_PORT: "6432"
+      DC_DB_USER: appuser
+      DC_DB_PASSWORD: apppassword
+      DC_DB_NAME: appdb
+      # DRC Connection (via PgBouncer)
+      DRC_DB_HOST: pgbouncer-drc
+      DRC_DB_PORT: "6432"
+      DRC_DB_USER: appuser
+      DRC_DB_PASSWORD: apppassword
+      DRC_DB_NAME: appdb
+      # Active database target (dc or drc)
+      ACTIVE_DB: dc
+    ports:
+      - "8080:8080"
+    depends_on:
+      pgbouncer-dc:
+        condition: service_healthy
+      pgbouncer-drc:
+        condition: service_healthy
+    networks:
+      - drc-network
+    restart: unless-stopped
+
+# ============================================
+# Volumes
+# ============================================
+volumes:
+  pg_dc_data:
+    driver: local
+    name: drc_pg_dc_data
+  pg_drc_data:
+    driver: local
+    name: drc_pg_drc_data
+
+# ============================================
+# Network
+# ============================================
+networks:
+  drc-network:
+    driver: bridge
+    name: drc-network

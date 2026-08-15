@@ -1,0 +1,53 @@
+# ===================================================================
+# Patroni Cluster Orchestrator Configuration - DC Primary Node (dc-db01)
+# ===================================================================
+scope: postgres-ha-cluster
+namespace: /service
+name: dc-db01
+
+etcd3:
+  hosts:
+    - 192.168.10.15:2379  # DC etcd Node 1
+    - 192.168.10.16:2379  # DC etcd Node 2
+    - 192.168.20.15:2379  # DRC etcd Node 3
+
+restapi:
+  listen: 192.168.10.11:8008
+  connect_address: 192.168.10.11:8008
+
+bootstrap:
+  dcs:
+    ttl: 30
+    loop_wait: 10
+    retry_timeout: 10
+    maximum_lag_on_failover: 1048576  # 1MB max lag for automatic failover
+    synchronous_mode: false            # Set false for Inter-DC Async tolerance
+    postgresql:
+      use_pg_rewind: true
+      use_slots: true
+      parameters:
+        wal_level: replica
+        max_wal_senders: 10
+        hot_standby: "on"
+        archive_mode: "on"
+        archive_command: "pgbackrest --stanza=production archive-push %p"
+
+postgresql:
+  listen: 192.168.10.11:5432
+  connect_address: 192.168.10.11:5432
+  data_dir: /var/lib/postgresql/16/main
+  bin_dir: /usr/lib/postgresql/16/bin
+  pgpass: /var/lib/postgresql/.pgpass
+  authentication:
+    replication:
+      username: replicator
+      password: StrongReplicationPassword
+    superuser:
+      username: postgres
+      password: AdminPostgresPassword
+
+tags:
+  nofailover: false
+  noloadbalance: false
+  clonefrom: false
+  nosync: false

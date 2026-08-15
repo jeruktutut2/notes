@@ -1,0 +1,113 @@
+version: '3.8'
+
+services:
+  # ===================================================================
+  # 🏢 MAIN DATA CENTER (DC) - JAKARTA
+  # ===================================================================
+  postgres-dc:
+    image: postgres:16-alpine
+    container_name: postgres-dc
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: secretpassword
+      POSTGRES_DB: dcdrc_db
+    volumes:
+      - postgres_dc_data:/var/lib/postgresql/data
+      - ./scripts/init-primary.sh:/docker-entrypoint-initdb.d/init-primary.sh:ro
+    ports:
+      - "5432:5432"
+    networks:
+      - dc_drc_net
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d dcdrc_db"]
+      interval: 3s
+      timeout: 3s
+      retries: 5
+
+  app-dc:
+    build:
+      context: ./app
+      dockerfile: Dockerfile
+    container_name: app-dc
+    environment:
+      SITE_NAME: "MAIN_DATA_CENTER_JAKARTA"
+      DB_HOST: postgres-dc
+      DB_PORT: "5432"
+      DB_USER: postgres
+      DB_PASSWORD: secretpassword
+      DB_NAME: dcdrc_db
+      PORT: "1323"
+    ports:
+      - "1323:1323"
+    depends_on:
+      postgres-dc:
+        condition: service_healthy
+    networks:
+      - dc_drc_net
+
+  # ===================================================================
+  # 🏬 DISASTER RECOVERY CENTER (DRC) - SURABAYA
+  # ===================================================================
+  postgres-drc:
+    image: postgres:16-alpine
+    container_name: postgres-drc
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: secretpassword
+      POSTGRES_DB: dcdrc_db
+    entrypoint: ["/bin/sh", "-c", "/scripts/init-drc.sh"]
+    volumes:
+      - postgres_drc_data:/var/lib/postgresql/data
+      - ./scripts/init-drc.sh:/scripts/init-drc.sh:ro
+    ports:
+      - "5433:5432"
+    depends_on:
+      postgres-dc:
+        condition: service_healthy
+    networks:
+      - dc_drc_net
+
+  app-drc:
+    build:
+      context: ./app
+      dockerfile: Dockerfile
+    container_name: app-drc
+    environment:
+      SITE_NAME: "DISASTER_RECOVERY_CENTER_SURABAYA"
+      DB_HOST: postgres-drc
+      DB_PORT: "5432"
+      DB_USER: postgres
+      DB_PASSWORD: secretpassword
+      DB_NAME: dcdrc_db
+      PORT: "1323"
+    ports:
+      - "1324:1323"
+    depends_on:
+      - postgres-drc
+    networks:
+      - dc_drc_net
+
+  # ===================================================================
+  # 🔀 TRAFFIC ROUTER & FAILOVER (HAProxy GSLB Simulator)
+  # ===================================================================
+  haproxy:
+    image: haproxy:2.8-alpine
+    container_name: haproxy-router
+    volumes:
+      - ./haproxy/haproxy.cfg:/usr/local/etc/haproxy/haproxy.cfg:ro
+    ports:
+      - "8080:8080"   # Active Entrypoint Endpoint
+      - "8404:8404"   # HAProxy Dashboard Stats (admin:admin)
+    depends_on:
+      - app-dc
+      - app-drc
+    networks:
+      - dc_drc_net
+
+networks:
+  dc_drc_net:
+    driver: bridge
+
+volumes:
+  postgres_dc_data:
+  postgres_drc_data:
