@@ -1,0 +1,30 @@
+{{ define "loginui" }}
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login UI</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="login-container">
+        <h2>Login</h2>
+        <p>{{ .message }}</p>
+        <form id="loginForm" method="post" action="/login?clientId={{ .clientId }}&state={{ .state }}">
+            <div class="input-group">
+                <label for="email">Email</label>
+                <input type="text" id="email" name="email" required>
+            </div>
+            <div class="input-group">
+                <label for="password">Password</label>
+                <input type="password" id="password" name="password" required>
+            </div>
+            <button type="submit" id="submitBtn">Kirim Data</button>
+        </form>
+        <div id="responseMessage"></div>
+    </div>
+    <!-- <script src="script.js"></script> -->
+</body>
+</html>
+{{ end }}
