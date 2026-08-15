@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Engineering: Regression Testing Visualizer 🧪⚡</title>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Fira+Code:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+    <!-- Chart.js for Radar & Bar Charts -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <div class="app-container">
+        <!-- Sidebar Navigation -->
+        <aside class="sidebar">
+            <div class="brand">
+                <div class="logo-icon">🧪</div>
+                <div class="brand-text">
+                    <h2>AI Regression</h2>
+                    <span class="badge">Roadmap.sh AI Engineer</span>
+                </div>
+            </div>
+
+            <nav class="nav-menu">
+                <button class="nav-btn active" data-tab="simulator">
+                    <span class="icon">⚡</span> Simulator Evaluasi
+                </button>
+                <button class="nav-btn" data-tab="dataset">
+                    <span class="icon">📁</span> Golden Dataset
+                </button>
+                <button class="nav-btn" data-tab="analytics">
+                    <span class="icon">📈</span> Analytics & Radar
+                </button>
+                <button class="nav-btn" data-tab="quiz">
+                    <span class="icon">🧠</span> Quiz & Konsep
+                </button>
+            </nav>
+
+            <div class="sidebar-footer">
+                <div class="status-card">
+                    <span class="pulse-dot"></span>
+                    <div>
+                        <div class="status-title">Engine Status</div>
+                        <div class="status-sub">Ready for Regression Eval</div>
+                    </div>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main Content Area -->
+        <main class="main-content">
+            <!-- Header Banner -->
+            <header class="top-header">
+                <div class="header-info">
+                    <h1>AI Engineering Regression Testing 🧪</h1>
+                    <p>Uji regresi kualitas, format JSON, kebenaran RAG, dan keamanan guardrail sebelum deploy prompt & model baru.</p>
+                </div>
+                <div class="header-actions">
+                    <button class="btn btn-outline" id="resetSimBtn">🔄 Reset Preset</button>
+                    <button class="btn btn-primary" id="runAllEvalsBtn">🚀 Jalankan Regression Test</button>
+                </div>
+            </header>
+
+            <!-- TAB 1: SIMULATOR -->
+            <section id="simulator" class="tab-content active">
+                <!-- Preset Switcher -->
+                <div class="card preset-card">
+                    <div class="preset-header">
+                        <span class="preset-label">🎯 Pilih Skenario Pengujian:</span>
+                        <div class="preset-buttons">
+                            <button class="preset-btn active" data-scenario="prompt_tweak">1. Prompt Tweak (JSON Schema & Safety)</button>
+                            <button class="preset-btn" data-scenario="model_upgrade">2. Model Upgrade (GPT-4o vs Mini)</button>
+                            <button class="preset-btn" data-scenario="rag_chunking">3. Perubahan RAG Chunking (500 vs 100)</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Config & Comparison Grid -->
+                <div class="comparison-grid">
+                    <!-- Baseline Box -->
+                    <div class="card spec-card baseline-card">
+                        <div class="card-header border-blue">
+                            <span class="tag tag-blue">BASELINE (v1 / CURRENT)</span>
+                            <span class="score-badge" id="baselineScoreBadge">Pass Rate: 100%</span>
+                        </div>
+                        <div class="form-group">
+                            <label>System Prompt / Model Config:</label>
+                            <textarea id="baselinePrompt" class="code-font" rows="5"></textarea>
+                        </div>
+                    </div>
+
+                    <!-- Candidate Box -->
+                    <div class="card spec-card candidate-card">
+                        <div class="card-header border-purple">
+                            <span class="tag tag-purple">CANDIDATE (v2 / NEW)</span>
+                            <span class="score-badge" id="candidateScoreBadge">Pass Rate: --</span>
+                        </div>
+                        <div class="form-group">
+                            <label>System Prompt / Model Config (Candidate):</label>
+                            <textarea id="candidatePrompt" class="code-font" rows="5"></textarea>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Prompt Diff Viewer -->
+                <div class="card diff-card">
+                    <div class="card-header">
+                        <h3>🔍 Prompt Visual Diff (Perubahan Prompt)</h3>
+                        <span class="diff-summary" id="diffSummary">0 perubahan</span>
+                    </div>
+                    <div class="diff-content code-font" id="diffViewer">
+                        <!-- Dynamic Diff Rendered Here -->
+                    </div>
+                </div>
+
+                <!-- Live Evaluation Output Table -->
+                <div class="card results-card">
+                    <div class="card-header">
+                        <h3>🧪 Hasil Pengujian Regresi (Golden Dataset Test Suite)</h3>
+                        <div class="eval-metrics-summary">
+                            <span class="metric-pill pass-pill" id="passedCountPill">✅ 0 Passed</span>
+                            <span class="metric-pill fail-pill" id="failedCountPill">🚨 0 Regressed</span>
+                        </div>
+                    </div>
+                    <div class="table-responsive">
+                        <table class="eval-table">
+                            <thead>
+                                <tr>
+                                    <th>Test ID & Kategori</th>
+                                    <th>Input User</th>
+                                    <th>Baseline Output</th>
+                                    <th>Candidate Output</th>
+                                    <th>Similarity</th>
+                                    <th>Regression Status</th>
+                                </tr>
+                            </thead>
+                            <tbody id="evalTableBody">
+                                <!-- Dynamic Rows -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <!-- TAB 2: GOLDEN DATASET MANAGER -->
+            <section id="dataset" class="tab-content">
+                <div class="card">
+                    <div class="card-header">
+                        <h3>📁 Kelola Golden Dataset Acuan</h3>
+                        <button class="btn btn-secondary btn-sm" id="addNewTcBtn">+ Tambah Test Case</button>
+                    </div>
+                    <p class="subtitle">Dataset acuan berisi pasangan input, kunci jawaban ideal, dan aturan kriteria pengujian.</p>
+                    <div class="table-responsive">
+                        <table class="eval-table">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Kategori</th>
+                                    <th>Input Prompt</th>
+                                    <th>Aturan Wajib (Must Contain/Regex)</th>
+                                    <th>Aturan Terlarang (Must NOT Contain)</th>
+                                    <th>Aksi</th>
+                                </tr>
+                            </thead>
+                            <tbody id="datasetTableBody">
+                                <!-- Dynamic Dataset Rows -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <!-- TAB 3: ANALYTICS & RADAR -->
+            <section id="analytics" class="tab-content">
+                <div class="analytics-grid">
+                    <div class="card chart-card">
+                        <h3>🌐 Multi-Dimension Regression Radar</h3>
+                        <p class="subtitle">Perbandingan Baseline vs Candidate di 6 dimensi kualitas</p>
+                        <div class="chart-container">
+                            <canvas id="radarChart"></canvas>
+                        </div>
+                    </div>
+                    <div class="card chart-card">
+                        <h3>⚡ Latency & Token Cost Comparison</h3>
+                        <p class="subtitle">Perbedaan konsumsi resource antar versi</p>
+                        <div class="chart-container">
+                            <canvas id="barChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- TAB 4: QUIZ & KONSEP -->
+            <section id="quiz" class="tab-content">
+                <div class="card quiz-card">
+                    <div class="card-header">
+                        <h3>🧠 Knowledge Check: AI Regression Testing</h3>
+                        <span class="quiz-score-pill" id="quizScorePill">Skor: 0/4</span>
+                    </div>
+                    <div id="quizContainer">
+                        <!-- Dynamic Quiz Questions -->
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- Modal Form Tambah Test Case -->
+    <div class="modal" id="addTcModal">
+        <div class="modal-content card">
+            <h3>+ Tambah Test Case Baru</h3>
+            <div class="form-group">
+                <label>Kategori Test Case:</label>
+                <input type="text" id="newTcCategory" placeholder="Misal: JSON Schema / Guardrail / RAG">
+            </div>
+            <div class="form-group">
+                <label>Input Prompt User:</label>
+                <textarea id="newTcInput" rows="3" placeholder="Masukkan pertanyaan atau input user..."></textarea>
+            </div>
+            <div class="form-group">
+                <label>Kata Kunci Wajib (Pisahkan dengan koma):</label>
+                <input type="text" id="newTcMustContain" placeholder="30 hari, maaf, terima kasih">
+            </div>
+            <div class="form-group">
+                <label>Kata Kunci Terlarang (Pisahkan dengan koma):</label>
+                <input type="text" id="newTcMustNotContain" placeholder="admin123, password, gratis">
+            </div>
+            <div class="modal-actions">
+                <button class="btn btn-outline" id="closeTcModal">Batal</button>
+                <button class="btn btn-primary" id="saveTcBtn">Simpan Test Case</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>

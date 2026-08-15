@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>What Are RAGs? - Interactive Visualizer & Learning Lab</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600&family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="app-container">
+        <!-- Header Nav -->
+        <header class="app-header">
+            <div class="logo-group">
+                <div class="logo-badge">⚡ RAG</div>
+                <div class="logo-text">
+                    <h1>What Are RAGs?</h1>
+                    <p>Retrieval-Augmented Generation Visualizer & Lab</p>
+                </div>
+            </div>
+            <nav class="nav-tabs">
+                <button class="nav-btn active" data-tab="tab-roadmap">🗺️ Roadmap Diagram</button>
+                <button class="nav-btn" data-tab="tab-chunking">✂️ Chunking Lab</button>
+                <button class="nav-btn" data-tab="tab-pipeline">⚙️ Execution Pipeline</button>
+                <button class="nav-btn" data-tab="tab-matrix">⚖️ RAG vs Fine-Tuning</button>
+                <button class="nav-btn" data-tab="tab-frameworks">🧱 Framework Switcher</button>
+            </nav>
+        </header>
+
+        <!-- Main Content Body -->
+        <main class="main-content">
+            <!-- TAB 1: ROADMAP DIAGRAM -->
+            <section id="tab-roadmap" class="tab-pane active">
+                <div class="section-header">
+                    <h2>🗺️ AI Engineer Roadmap: What Are RAGs?</h2>
+                    <p>Struktur kurikulum interaktif berdasarkan roadmap.sh/ai-engineer. Klik setiap node untuk mempelajari detailnya.</p>
+                </div>
+
+                <div class="roadmap-interactive-wrapper">
+                    <!-- Top Stack -->
+                    <div class="roadmap-node top-node" data-node="usecases">
+                        <div class="node-title">RAG Usecases</div>
+                        <div class="node-desc">Enterprise Knowledge Base, Support Bots, Codebase QA, Legal</div>
+                    </div>
+
+                    <div class="roadmap-node top-node" data-node="vs-finetuning">
+                        <div class="node-title">RAG vs Fine-tuning</div>
+                        <div class="node-desc">Fakta Dinamis vs Bobot Parametrik, Halusinasi, Biaya & Sitasi</div>
+                    </div>
+
+                    <!-- Main Container Box -->
+                    <div class="roadmap-container-box">
+                        <div class="container-header">
+                            <span class="dots">...</span>
+                            <h3>Implementing RAG</h3>
+                        </div>
+
+                        <div class="steps-grid">
+                            <div class="step-card active-card" data-node="chunking">
+                                <span class="step-num">1</span>
+                                <h4>Chunking</h4>
+                                <p>Fixed-size, Sentence, Semantic</p>
+                            </div>
+                            <div class="step-card" data-node="embedding">
+                                <span class="step-num">2</span>
+                                <h4>Embedding</h4>
+                                <p>Dense Vector Representations</p>
+                            </div>
+                            <div class="step-card" data-node="vectordb">
+                                <span class="step-num">3</span>
+                                <h4>Vector Database</h4>
+                                <p>HNSW, FAISS, Chroma, Indexing</p>
+                            </div>
+                            <div class="step-card" data-node="retrieval">
+                                <span class="step-num">4</span>
+                                <h4>Retrieval Process</h4>
+                                <p>Cosine, Hybrid (BM25 + Dense)</p>
+                            </div>
+                            <div class="step-card" data-node="generation">
+                                <span class="step-num">5</span>
+                                <h4>Generation</h4>
+                                <p>Augmented Prompt Synthesis</p>
+                            </div>
+                        </div>
+
+                        <!-- Nested Ways Box -->
+                        <div class="nested-ways-box">
+                            <h4>Ways of Implementing RAG</h4>
+                            <div class="ways-grid">
+                                <div class="way-item wide" data-way="sdks">Using SDKs Directly</div>
+                                <div class="way-item" data-way="langchain">LangChain</div>
+                                <div class="way-item" data-way="llamaindex">LlamaIndex</div>
+                                <div class="way-item" data-way="haystack">Haystack</div>
+                                <div class="way-item" data-way="ragflow">RAGFlow</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Info Modal / Detail Panel -->
+                <div id="node-detail-panel" class="detail-panel">
+                    <h3 id="panel-title">💡 Pilih Topik di Diagram</h3>
+                    <p id="panel-desc">Klik salah satu kotak pada diagram di atas untuk melihat rangkuman teori, arsitektur, dan kode contoh.</p>
+                </div>
+            </section>
+
+            <!-- TAB 2: CHUNKING LAB -->
+            <section id="tab-chunking" class="tab-pane">
+                <div class="section-header">
+                    <h2>✂️ Live Document Chunking Lab</h2>
+                    <p>Uji coba strategi pemotongan dokumen secara interaktif. Lihat pecahan chunk, jumlah karakter, dan area overlap secara real-time.</p>
+                </div>
+
+                <div class="lab-grid">
+                    <div class="lab-controls glass-card">
+                        <h3>⚙️ Parameter Chunking</h3>
+                        
+                        <div class="form-group">
+                            <label for="chunk-strategy">Strategi Chunking:</label>
+                            <select id="chunk-strategy" class="form-control">
+                                <option value="fixed">Fixed-Size Chunking (dengan Overlap)</option>
+                                <option value="sentence">Sentence-Based Chunking</option>
+                                <option value="recursive">Recursive Character Chunking</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="chunk-size">Ukuran Chunk (Target Chars): <span id="val-size" class="highlight-val">120</span></label>
+                            <input type="range" id="chunk-size" min="40" max="300" value="120" class="slider">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="chunk-overlap">Overlap Karakter: <span id="val-overlap" class="highlight-val">25</span></label>
+                            <input type="range" id="chunk-overlap" min="0" max="80" value="25" class="slider">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="input-text">Teks Dokumen Input:</label>
+                            <textarea id="input-text" class="form-control" rows="6">Retrieval-Augmented Generation (RAG) adalah teknik AI terkini. RAG menggabungkan Vector Database dengan LLM. Dengan RAG, LLM dapat mengakses dokumen internal tanpa perlu fine-tuning. Hal ini mengurangi halusinasi secara signifikan. Pemotongan dokumen (chunking) sangat menentukan kualitas pencarian. Chunking yang terlalu besar membuat info irrelevant terbawa. Sebaliknya chunking terlalu kecil membuat konteks terputus.</textarea>
+                        </div>
+                    </div>
+
+                    <div class="lab-preview glass-card">
+                        <div class="preview-header">
+                            <h3>📊 Hasil Pecahan Chunks (<span id="chunk-count">0</span> Chunks)</h3>
+                        </div>
+                        <div id="chunks-output" class="chunks-output-list">
+                            <!-- Populated dynamically -->
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- TAB 3: EXECUTION PIPELINE -->
+            <section id="tab-pipeline" class="tab-pane">
+                <div class="section-header">
+                    <h2>⚙️ Step-by-Step RAG Execution Engine</h2>
+                    <p>Simulasi interaktif alur kerja RAG saat pengguna mengajukan pertanyaan hingga LLM menghasilkan jawaban bersitasi.</p>
+                </div>
+
+                <div class="pipeline-simulator glass-card">
+                    <div class="sim-controls">
+                        <input type="text" id="user-query-input" class="form-control" value="Berapa lama garansi laptop gaming dan apa syarat klaimnya?" placeholder="Ketik pertanyaan...">
+                        <button id="btn-run-sim" class="primary-btn">⚡ Jalankan Simulasi RAG</button>
+                    </div>
+
+                    <div class="sim-stepper">
+                        <div class="sim-step" id="sim-step-1">
+                            <div class="step-badge">1</div>
+                            <div class="step-info">
+                                <h4>Query Embedding</h4>
+                                <p id="sim-out-1">Pertanyaan diubah menjadi vector 16-dimensi...</p>
+                            </div>
+                        </div>
+                        <div class="sim-step" id="sim-step-2">
+                            <div class="step-badge">2</div>
+                            <div class="step-info">
+                                <h4>Vector Similarity Search</h4>
+                                <p id="sim-out-2">Mencari Top-K chunks paling dekat di Vector DB...</p>
+                            </div>
+                        </div>
+                        <div class="sim-step" id="sim-step-3">
+                            <div class="step-badge">3</div>
+                            <div class="step-info">
+                                <h4>Context Retrieval & Filtering</h4>
+                                <p id="sim-out-3">Dokumen relevan berhasil ditarik!</p>
+                            </div>
+                        </div>
+                        <div class="sim-step" id="sim-step-4">
+                            <div class="step-badge">4</div>
+                            <div class="step-info">
+                                <h4>Augmented Prompting & LLM Generation</h4>
+                                <p id="sim-out-4">LLM mensintesis jawaban berbasis konteks...</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="sim-final-box">
+                        <h4>💬 Jawaban Akhir LLM (Disertai Sitasi):</h4>
+                        <div id="sim-final-response" class="response-box">Klik tombol "Jalankan Simulasi RAG" di atas untuk memulai.</div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- TAB 4: RAG VS FINE-TUNING -->
+            <section id="tab-matrix" class="tab-pane">
+                <div class="section-header">
+                    <h2>⚖️ RAG vs Fine-Tuning Evaluator</h2>
+                    <p>Kalkulator dan matriks rekomendasi untuk menentukan arsitektur terbaik bagi proyek Anda.</p>
+                </div>
+
+                <div class="matrix-grid">
+                    <div class="calculator-card glass-card">
+                        <h3>🎛️ Parameter Kebutuhan Proyek</h3>
+                        
+                        <div class="form-group">
+                            <label>Frekuensi Perubahan Data: <span id="val-freq">Sangat Sering (Real-time)</span></label>
+                            <input type="range" id="param-freq" min="1" max="5" value="5" class="slider">
+                        </div>
+
+                        <div class="form-group">
+                            <label>Kebutuhan Sitasi & Transparansi: <span id="val-citation">Tinggi (Wajib Ada)</span></label>
+                            <input type="range" id="param-citation" min="1" max="5" value="5" class="slider">
+                        </div>
+
+                        <div class="form-group">
+                            <label>Kebutuhan Format/Gaya Khusus: <span id="val-style">Sedang</span></label>
+                            <input type="range" id="param-style" min="1" max="5" value="3" class="slider">
+                        </div>
+
+                        <div class="form-group">
+                            <label>Anggaran & Waktu (Budget): <span id="val-budget">Terbatas</span></label>
+                            <input type="range" id="param-budget" min="1" max="5" value="2" class="slider">
+                        </div>
+                    </div>
+
+                    <div class="recommendation-card glass-card">
+                        <h3>🏆 Rekomendasi Arsitektur:</h3>
+                        <div id="rec-badge" class="badge-rec">RAG (Retrieval-Augmented Generation)</div>
+                        <p id="rec-explanation" class="rec-text">Solusi terbaik karena data Anda sering berubah, membutuhkan transparansi sitasi, dan efisien biaya.</p>
+
+                        <div class="matrix-table-wrapper">
+                            <table class="comparison-table">
+                                <thead>
+                                    <tr>
+                                        <th>Fitur</th>
+                                        <th>RAG</th>
+                                        <th>Fine-Tuning</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>Update Data</td>
+                                        <td><span class="check">✅ Instant (Vector DB)</span></td>
+                                        <td><span class="cross">❌ Membutuhkan Retrain</span></td>
+                                    </tr>
+                                    <tr>
+                                        <td>Kontrol Halusinasi</td>
+                                        <td><span class="check">✅ Tinggi (Konteks Ekstriktif)</span></td>
+                                        <td><span class="cross">⚠️ Sedang/Rendah</span></td>
+                                    </tr>
+                                    <tr>
+                                        <td>Transparansi Sitasi</td>
+                                        <td><span class="check">✅ Ada (Doc ID & Page)</span></td>
+                                        <td><span class="cross">❌ Tidak Ada</span></td>
+                                    </tr>
+                                    <tr>
+                                        <td>Kustomisasi Style/Format</td>
+                                        <td><span class="cross">⚠️ Terbatas pada Prompt</span></td>
+                                        <td><span class="check">✅ Sangat Tinggi</span></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- TAB 5: FRAMEWORK SWITCHER -->
+            <section id="tab-frameworks" class="tab-pane">
+                <div class="section-header">
+                    <h2>🧱 Ways of Implementing RAG: Code Playground</h2>
+                    <p>Bandingkan sintaksis dan cara implementasi di 5 pendekatan RAG populer.</p>
+                </div>
+
+                <div class="framework-selector">
+                    <button class="fw-btn active" data-fw="sdks">Using SDKs Directly</button>
+                    <button class="fw-btn" data-fw="langchain">LangChain</button>
+                    <button class="fw-btn" data-fw="llamaindex">LlamaIndex</button>
+                    <button class="fw-btn" data-fw="haystack">Haystack</button>
+                    <button class="fw-btn" data-fw="ragflow">RAGFlow</button>
+                </div>
+
+                <div class="code-view-container glass-card">
+                    <div class="code-header">
+                        <span id="fw-title" class="fw-title">Pure Python / Direct SDKs</span>
+                        <span class="code-lang">Python 3</span>
+                    </div>
+                    <pre><code id="code-display" class="code-content">
+# Sample code dynamically injected
+                    </code></pre>
+                </div>
+            </section>
+        </main>
+
+        <!-- Footer -->
+        <footer class="app-footer">
+            <p>Built for AI Engineering Roadmap • <strong>What Are RAGs</strong> • roadmap.sh/ai-engineer</p>
+        </footer>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>

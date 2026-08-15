@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Choosing the Right Models - Interactive AI Engineer Playground</title>
+  <meta name="description" content="Visualizer & Interactive Model Selector Dashboard berdasarkan roadmap.sh AI Engineer path.">
+  
+  <!-- Google Fonts & Icons -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Outfit:wght@400;600;700;800&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+  
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+  <!-- Header & Hero Section -->
+  <header class="hero">
+    <div class="container hero-container">
+      <div class="badge">roadmap.sh / ai-engineer</div>
+      <h1>Choosing the Right Models</h1>
+      <p class="hero-subtitle">
+        Panduan Visual & Playground Interaktif untuk Menguasai Lanskap Model AI: 
+        <strong>Closed Models</strong>, <strong>Open Source Models</strong>, <strong>Platforms & Ecosystem</strong>, serta <strong>APIs & SDKs</strong>.
+      </p>
+      
+      <div class="hero-stats">
+        <div class="stat-card">
+          <span class="stat-num" id="stat-closed-count">5+</span>
+          <span class="stat-label">Closed Models</span>
+        </div>
+        <div class="stat-card">
+          <span class="stat-num" id="stat-open-count">4+</span>
+          <span class="stat-label">Open Source Families</span>
+        </div>
+        <div class="stat-card">
+          <span class="stat-num" id="stat-ecosystem-count">8+</span>
+          <span class="stat-label">Platforms & SDKs</span>
+        </div>
+        <div class="stat-card accent">
+          <span class="stat-num">2M</span>
+          <span class="stat-label">Max Context Tokens</span>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main class="container main-content">
+
+    <!-- Navigation Tabs -->
+    <nav class="nav-tabs">
+      <button class="tab-btn active" data-tab="architecture">🌐 Peta Ekosistem (Roadmap)</button>
+      <button class="tab-btn" data-tab="comparison">📊 Matriks Perbandingan Model</button>
+      <button class="tab-btn" data-tab="calculator">🧮 Kalkulator VRAM & Biaya Token</button>
+      <button class="tab-btn" data-tab="wizard">🧠 Decision Tree Selector</button>
+    </nav>
+
+    <!-- TAB 1: PETA EKOSISTEM ROADMAP -->
+    <section id="tab-architecture" class="tab-content active">
+      <div class="section-header">
+        <h2>Lanskap Model & Ekosistem AI Engineering</h2>
+        <p>Visualisasi terstruktur dari komponen yang terdapat pada gambar roadmap.</p>
+      </div>
+
+      <div class="roadmap-grid">
+        <!-- Closed Models Box -->
+        <div class="roadmap-card closed-box">
+          <div class="card-badge gold">Closed Models</div>
+          <div class="model-stack">
+            <div class="stack-item highlight-gold" onclick="highlightModel('claude')">
+              <strong>Anthropic Claude</strong>
+              <span class="sub-tag">Claude 3.5 Sonnet / Haiku</span>
+            </div>
+            <div class="stack-item" onclick="highlightModel('gemini')">
+              <strong>Google Gemini</strong>
+              <span class="sub-tag">1.5 Pro / Flash (2M Context)</span>
+            </div>
+            <div class="stack-item" onclick="highlightModel('openai')">
+              <strong>OpenAI (GPT, o-series)</strong>
+              <span class="sub-tag">GPT-4o, o1, o3-mini</span>
+            </div>
+            <div class="dual-row">
+              <div class="stack-item half" onclick="highlightModel('cohere')">Cohere</div>
+              <div class="stack-item half" onclick="highlightModel('mistral')">Mistral</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Open Source Models Box -->
+        <div class="roadmap-card open-box">
+          <div class="card-badge green">Open Source Models</div>
+          <div class="model-stack">
+            <div class="stack-item highlight-green" onclick="highlightModel('llama')">
+              <strong>Meta Llama</strong>
+              <span class="sub-tag">Llama 3.1 / 3.2 (1B s/d 405B)</span>
+            </div>
+            <div class="stack-item" onclick="highlightModel('deepseek')">
+              <strong>DeepSeek</strong>
+              <span class="sub-tag">DeepSeek V3 & R1 Reasoning (MoE)</span>
+            </div>
+            <div class="dual-row">
+              <div class="stack-item half" onclick="highlightModel('qwen')">Qwen 2.5</div>
+              <div class="stack-item half" onclick="highlightModel('gemma')">Gemma 2</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Platforms & Ecosystem Box -->
+        <div class="roadmap-card platform-box">
+          <div class="card-badge yellow">Platforms & Ecosystem</div>
+          <div class="model-stack">
+            <div class="stack-group">
+              <div class="stack-item yellow-bg" onclick="highlightModel('hf')">Hugging Face</div>
+              <div class="sub-items">
+                <span class="pill">Hugging Face Tasks</span>
+                <span class="pill">Hugging Face Hub</span>
+                <span class="pill">Transformers.js</span>
+              </div>
+            </div>
+            <div class="dual-row margin-top">
+              <div class="stack-item third yellow-bg" onclick="highlightModel('ollama')">Ollama</div>
+              <div class="stack-item third yellow-bg" onclick="highlightModel('lmstudio')">LM Studio</div>
+              <div class="stack-item third yellow-bg" onclick="highlightModel('openrouter')">OpenRouter</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- APIs & SDKs Box -->
+        <div class="roadmap-card api-box">
+          <div class="card-badge blue">APIs & SDKs</div>
+          <div class="model-stack">
+            <div class="stack-item blue-bg">OpenAI Response API</div>
+            <div class="stack-item blue-bg">Claude Messages API</div>
+            <div class="stack-item blue-bg">Google Gemini API</div>
+            <div class="stack-item blue-bg">Hugging Face Inference SDK</div>
+            <div class="stack-item blue-bg">OpenAI-compatible APIs</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Detail Display Modal/Panel -->
+      <div id="model-detail-panel" class="detail-panel">
+        <h3 id="detail-title">Klik salah satu model di atas untuk melihat detail teknis & rekomendasi penggunaan</h3>
+        <p id="detail-description">Pilih model seperti Anthropic Claude, Google Gemini, Meta Llama, atau DeepSeek R1 untuk melihat keunggulan spesifiknya.</p>
+        <div id="detail-tags" class="tag-container"></div>
+      </div>
+    </section>
+
+    <!-- TAB 2: MATRIKS PERBANDINGAN MODEL -->
+    <section id="tab-comparison" class="tab-content">
+      <div class="section-header">
+        <h2>Matriks Perbandingan Interactive</h2>
+        <p>Filter dan bandingkan model berdasarkan harga, latensi, context window, dan tipe lisensi.</p>
+      </div>
+
+      <!-- Filter Bar -->
+      <div class="filter-bar">
+        <input type="text" id="search-model" placeholder="🔍 Cari nama model (misal: Claude, DeepSeek, Llama)..." class="input-field">
+        <select id="filter-type" class="select-field">
+          <option value="all">Semua Tipe Model</option>
+          <option value="closed">Closed Models (Proprietary)</option>
+          <option value="open">Open Source / Open Weights</option>
+        </select>
+        <select id="filter-capability" class="select-field">
+          <option value="all">Semua Kemampuan Spesifik</option>
+          <option value="coding">Coding & Software Architecture</option>
+          <option value="reasoning">Math & Complex Reasoning</option>
+          <option value="multimodal">Native Multimodal (Audio/Video)</option>
+          <option value="long-context">Long Context (>100K Tokens)</option>
+        </select>
+      </div>
+
+      <!-- Comparison Table -->
+      <div class="table-wrapper">
+        <table class="comparison-table">
+          <thead>
+            <tr>
+              <th>Nama Model</th>
+              <th>Tipe</th>
+              <th>Context Window</th>
+              <th>Input Cost / 1M</th>
+              <th>Output Cost / 1M</th>
+              <th>Fitur Unggulan</th>
+              <th>Lisensi / Access</th>
+            </tr>
+          </thead>
+          <tbody id="table-body">
+            <!-- Dynamic items rendered via app.js -->
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- TAB 3: KALKULATOR VRAM & BIAYA TOKEN -->
+    <section id="tab-calculator" class="tab-content">
+      <div class="section-header">
+        <h2>Kalkulator VRAM Hardware & Estimasi Biaya Token</h2>
+        <p>Hitung kebutuhan memori GPU lokal atau estimasi pengeluaran API bulanan.</p>
+      </div>
+
+      <div class="calculator-grid">
+        <!-- VRAM Calculator -->
+        <div class="calc-card">
+          <h3>🧮 Kalkulator VRAM GPU Local Hosting</h3>
+          <div class="form-group">
+            <label>Jumlah Parameter Model (Billion / B):</label>
+            <input type="number" id="calc-params" value="8" step="0.5" min="0.5" class="input-field">
+          </div>
+          <div class="form-group">
+            <label>Tipe Presisi Quantization:</label>
+            <select id="calc-bits" class="select-field">
+              <option value="4">INT4 / GGUF Q4_K_M (Sangat Efisien)</option>
+              <option value="8">INT8 / GGUF Q8_0 (Presisi Tinggi)</option>
+              <option value="16">FP16 / BF16 (Presisi Asli Full)</option>
+            </select>
+          </div>
+
+          <div class="result-box" id="vram-result">
+            <div class="res-item"><span>Est. Weights Size:</span> <strong id="res-weights">4.00 GB</strong></div>
+            <div class="res-item"><span>Recommended VRAM (+KV Cache):</span> <strong id="res-vram" class="accent-text">4.80 GB</strong></div>
+            <div class="res-item"><span>Rekomendasi Hardware:</span> <span id="res-hardware" class="hardware-badge">MacBook M1/M2/M3 (8GB RAM)</span></div>
+          </div>
+        </div>
+
+        <!-- Token API Cost Estimator -->
+        <div class="calc-card">
+          <h3>💰 Estimator Biaya Token API Cloud</h3>
+          <div class="form-group">
+            <label>Pilih Model API Target:</label>
+            <select id="cost-model-select" class="select-field">
+              <option value="gpt-4o">OpenAI GPT-4o ($2.50 / $10.00)</option>
+              <option value="gpt-4o-mini">OpenAI GPT-4o-mini ($0.15 / $0.60)</option>
+              <option value="claude-3-5-sonnet">Anthropic Claude 3.5 Sonnet ($3.00 / $15.00)</option>
+              <option value="claude-3-5-haiku">Anthropic Claude 3.5 Haiku ($1.00 / $5.00)</option>
+              <option value="gemini-1-5-pro">Google Gemini 1.5 Pro ($1.25 / $5.00)</option>
+              <option value="gemini-1-5-flash">Google Gemini 1.5 Flash ($0.075 / $0.30)</option>
+              <option value="deepseek-r1">DeepSeek R1 (via API) ($0.55 / $2.19)</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Estimasi Input Tokens per Bulan (Juta):</label>
+            <input type="number" id="input-tokens-m" value="10" step="1" min="0.1" class="input-field">
+          </div>
+          <div class="form-group">
+            <label>Estimasi Output Tokens per Bulan (Juta):</label>
+            <input type="number" id="output-tokens-m" value="2" step="0.5" min="0.1" class="input-field">
+          </div>
+
+          <div class="result-box" id="cost-result">
+            <div class="res-item"><span>Estimasi Total Biaya Bulanan:</span> <strong id="res-total-cost" class="gold-text">$45.00 USD</strong></div>
+            <div class="res-item"><span>Status Anggaran:</span> <span class="status-badge" id="cost-status">Ekonomis & Safe</span></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- TAB 4: DECISION TREE WIZARD -->
+    <section id="tab-wizard" class="tab-content">
+      <div class="section-header">
+        <h2>AI Model Decision Tree Selector</h2>
+        <p>Jawab beberapa pertanyaan berikut untuk mendapatkan rekomendasi model terbaik sesuai kebutuhan aplikasi Anda.</p>
+      </div>
+
+      <div class="wizard-container">
+        <div class="wizard-step" id="wizard-q1">
+          <h3>1. Apakah data aplikasi Anda BOLEH dikirim ke Cloud Publik?</h3>
+          <div class="wizard-options">
+            <button class="wizard-btn" onclick="wizardAnswer(1, 'cloud')">🌐 YA (Boleh menggunakan Cloud API berbayar)</button>
+            <button class="wizard-btn" onclick="wizardAnswer(1, 'selfhost')">🔒 TIDAK (Data Sensitif / Wajib Self-Hosted On-Premise)</button>
+          </div>
+        </div>
+
+        <div class="wizard-step hidden" id="wizard-q2-cloud">
+          <h3>2. Apa fokus utama kebutuhan aplikasi Anda?</h3>
+          <div class="wizard-options">
+            <button class="wizard-btn" onclick="wizardAnswer(2, 'coding')">💻 High-level Coding & Software Architecture</button>
+            <button class="wizard-btn" onclick="wizardAnswer(2, 'multimodal')">📹 Analisis Video/Audio/PDF Masif (>500K tokens)</button>
+            <button class="wizard-btn" onclick="wizardAnswer(2, 'reasoning')">🧠 Complex Math & Scientific Reasoning</button>
+            <button class="wizard-btn" onclick="wizardAnswer(2, 'cheap')">⚡ Biaya Termurah & Latensi Kilat (Chatbot)</button>
+          </div>
+        </div>
+
+        <div class="wizard-step hidden" id="wizard-q2-selfhost">
+          <h3>2. Apa spesifikasi target hardware server / device Anda?</h3>
+          <div class="wizard-options">
+            <button class="wizard-btn" onclick="wizardAnswer(2, 'edge')">📱 Edge / Mobile Device / Laptop Standard (VRAM <8GB)</button>
+            <button class="wizard-btn" onclick="wizardAnswer(2, 'server')">🖥️ Server GPU Enterprise (RTX 4090 / A100 VRAM 24-80GB)</button>
+            <button class="wizard-btn" onclick="wizardAnswer(2, 'coder-local')">💻 Local Code Completion (Multilingual)</button>
+          </div>
+        </div>
+
+        <!-- Recommendation Output -->
+        <div class="wizard-result hidden" id="wizard-recommendation">
+          <h3>🎉 Rekomendasi Model Terbaik Untuk Anda:</h3>
+          <div class="recommendation-card" id="rec-card-content">
+            <!-- Dynamic Content -->
+          </div>
+          <button class="reset-wizard-btn" onclick="resetWizard()">🔄 Ulangi Pertanyaan</button>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="container footer-content">
+      <p>Choosing the Right Models Learning Workspace | roadmap.sh/ai-engineer</p>
+    </div>
+  </footer>
+
+  <script src="app.js"></script>
+</body>
+</html>

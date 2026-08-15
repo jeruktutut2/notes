@@ -1,0 +1,32 @@
+# Python virtual environment
+venv/
+.venv/
+env/
+ENV/
+
+# Environment Variables (Sangat Penting! Jangan commit API Keys)
+.env
+
+# Byte-compiled / optimized files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Pytest / Cache
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Vector DB storage local
+chroma_db/
+.chroma/
+
+# IDE / Editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Temporary & Log files
+*.log
+scratch/

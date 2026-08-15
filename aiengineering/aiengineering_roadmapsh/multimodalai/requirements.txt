@@ -1,0 +1,11 @@
+# Multimodal AI Workspace Dependencies
+# Python 3.9+
+
+# Core Scientific & Data Processing
+numpy>=1.22.0
+pillow>=9.0.0
+requests>=2.28.0
+
+# Multimodal & AI Framework Helpers (Optional / Simulated for standalone execution)
+langchain-core>=0.1.0
+llama-index-core>=0.10.0

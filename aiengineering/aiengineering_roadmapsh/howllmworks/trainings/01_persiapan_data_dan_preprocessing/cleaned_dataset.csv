@@ -1,0 +1,7 @@
+id,nama,umur,pendapatan,ulasan,ulasan_bersih
+1,Budi,25.0,5000.0,<p>Barang bagus banget! Fast response. <b>Recommended!</b></p>,Barang bagus banget! Fast response. Recommended!
+3,Joko,30.0,5500.0,Produk rusak pas sampai! http://example.com/bukti.jpg Sangat kecewa.,Produk rusak pas sampai! Sangat kecewa.
+6,Rudi,28.0,6200.0,Pengiriman cepat &amp; aman. Terimakasih!,Pengiriman cepat &amp; aman. Terimakasih!
+7,Dewi,35.0,8000.0,"<div class='review'>Biasa aja sih, Nothing special...</div>","Biasa aja sih, Nothing special..."
+9,Rina,29.0,5800.0,Sangat memuaskan! Pelayanan ramah bintang 5. https://shop.com/product,Sangat memuaskan! Pelayanan ramah bintang 5.
+10,Tono,33.0,7100.0,<script>alert('xss')</script> Kualitas mantap pool!,alert('xss') Kualitas mantap pool!

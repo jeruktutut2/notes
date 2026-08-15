@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Embedding Models Visualizer & Interactive Lab | AI Engineer Roadmap</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600&family=Inter:wght@300;400;500;600;700&family=Outfit:wght@500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="app-container">
+        <!-- Header -->
+        <header class="main-header">
+            <div class="header-brand">
+                <div class="brand-logo">⚡</div>
+                <div>
+                    <h1>Embedding Models Playground</h1>
+                    <p class="subtitle">Interaktif Learning Module • <a href="https://roadmap.sh/ai-engineer" target="_blank" class="roadmap-link">roadmap.sh/ai-engineer</a></p>
+                </div>
+            </div>
+            <div class="header-status">
+                <span class="badge badge-success"><span class="dot"></span> Interactive Mode</span>
+                <span class="badge badge-outline">por/aiengineering/embedingmodels</span>
+            </div>
+        </header>
+
+        <!-- Navigation Tabs -->
+        <nav class="nav-tabs">
+            <button class="tab-btn active" data-tab="architecture">
+                <span class="tab-icon">📐</span> Model Architecture (Diagram)
+            </button>
+            <button class="tab-btn" data-tab="simulator">
+                <span class="tab-icon">🧪</span> Live Embedding Simulator
+            </button>
+            <button class="tab-btn" data-tab="matrix">
+                <span class="tab-icon">📊</span> Comparison Matrix & Benchmarks
+            </button>
+            <button class="tab-btn" data-tab="calculator">
+                <span class="tab-icon">🧮</span> Vector Memory & Cost Calculator
+            </button>
+        </nav>
+
+        <!-- Tab 1: Architecture Diagram Explorer -->
+        <section id="tab-architecture" class="tab-content active">
+            <div class="section-intro">
+                <h2>Embedding Models Architecture Layout</h2>
+                <p>Visualisasi hirarki model embedding sesuai dengan peta kurikulum <strong>roadmap.sh/ai-engineer</strong>. Klik pada kartu model untuk melihat rincian spesifikasi teknis.</p>
+            </div>
+
+            <!-- Diagram Container matching User Screenshot -->
+            <div class="diagram-wrapper">
+                <div class="diagram-outer-box">
+                    <div class="diagram-title">Proprietary Models</div>
+
+                    <div class="model-cards-grid">
+                        <div class="model-card proprietary-card" onclick="selectModel('openai')">
+                            <div class="card-icon">🟢</div>
+                            <div class="card-body">
+                                <h3>Open AI Embeddings API</h3>
+                                <p class="card-meta">text-embedding-3-small / large • Matryoshka Dimensions</p>
+                            </div>
+                            <span class="pill pill-yellow">Cloud API</span>
+                        </div>
+
+                        <div class="model-card proprietary-card" onclick="selectModel('gemini')">
+                            <div class="card-icon">🔵</div>
+                            <div class="card-body">
+                                <h3>Gemini Embedding</h3>
+                                <p class="card-meta">text-embedding-004 • Task-Aware Encoding</p>
+                            </div>
+                            <span class="pill pill-yellow">Cloud API</span>
+                        </div>
+
+                        <div class="model-card proprietary-card" onclick="selectModel('cohere')">
+                            <div class="card-icon">🟠</div>
+                            <div class="card-body">
+                                <h3>Cohere</h3>
+                                <p class="card-meta">embed-multilingual-v3.0 • Int8 / Binary Compression</p>
+                            </div>
+                            <span class="pill pill-yellow">Cloud API / VPC</span>
+                        </div>
+                    </div>
+
+                    <div class="diagram-divider"></div>
+
+                    <div class="diagram-title">Open Source Models</div>
+
+                    <div class="model-cards-grid">
+                        <div class="model-card open-card" onclick="selectModel('sentence-transformers')">
+                            <div class="card-icon">⚡</div>
+                            <div class="card-body">
+                                <h3>Sentence Transformers</h3>
+                                <p class="card-meta">all-MiniLM-L6-v2 • Ultra-Fast CPU Local Inference</p>
+                            </div>
+                            <span class="pill pill-yellow">Local / CPU</span>
+                        </div>
+
+                        <div class="model-card open-card" onclick="selectModel('huggingface')">
+                            <div class="card-icon">🤗</div>
+                            <div class="card-body">
+                                <h3>Models on Hugging Face</h3>
+                                <p class="card-meta">BAAI/bge-small-en-v1.5 • Top MTEB Score</p>
+                            </div>
+                            <span class="pill pill-yellow">Local / PyTorch</span>
+                        </div>
+
+                        <div class="model-card open-card" onclick="selectModel('jina')">
+                            <div class="card-icon">🦊</div>
+                            <div class="card-body">
+                                <h3>Jina</h3>
+                                <p class="card-meta">jina-embeddings-v2/v3 • 8k Context & Late Chunking</p>
+                            </div>
+                            <span class="pill pill-yellow">8K Long-Context</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Model Detail Inspector Modal / Panel -->
+            <div class="detail-panel glass-panel" id="model-detail-panel">
+                <div class="panel-header">
+                    <div class="panel-title-area">
+                        <span id="detail-icon" class="panel-icon">🟢</span>
+                        <div>
+                            <h3 id="detail-title">Pilih Model untuk Membuka Detail</h3>
+                            <span id="detail-category" class="badge">Proprietary / Open Source</span>
+                        </div>
+                    </div>
+                    <span class="close-btn" onclick="closeDetailPanel()">✕</span>
+                </div>
+                <div class="panel-body grid-2">
+                    <div class="spec-list">
+                        <h4>Spesifikasi Model</h4>
+                        <ul>
+                            <li><strong>Provider:</strong> <span id="spec-provider">-</span></li>
+                            <li><strong>Default Dimensions:</strong> <span id="spec-dim">-</span></li>
+                            <li><strong>Max Context Window:</strong> <span id="spec-context">-</span></li>
+                            <li><strong>MTEB Benchmark Score:</strong> <span id="spec-mteb">-</span></li>
+                            <li><strong>Biaya per 1M Tokens:</strong> <span id="spec-cost">-</span></li>
+                        </ul>
+                    </div>
+                    <div class="feature-notes">
+                        <h4>Fitur & Arsitektur Utama</h4>
+                        <p id="spec-description">Klik salah satu kotak model di atas untuk melihat ringkasan arsitektur teknis dan panduan integrasinya.</p>
+                        <div class="code-snippet-box">
+                            <pre><code id="spec-code">// Contoh Integrasi Python SDK</code></pre>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Tab 2: Live Embedding Simulator -->
+        <section id="tab-simulator" class="tab-content">
+            <div class="section-intro">
+                <h2>Live Embedding & Vector Similarity Simulator</h2>
+                <p>Simulasikan ekstraksi dense vector, kalkulasi metrik jarak (Cosine Similarity, Dot Product, Euclidean Distance), dan eksplorasi fitur pemotongan dimensi Matryoshka.</p>
+            </div>
+
+            <div class="grid-2">
+                <!-- Left Column: Inputs & Controls -->
+                <div class="glass-panel">
+                    <h3>1. Input Teks Pembanding</h3>
+                    <div class="form-group">
+                        <label for="text-1">Teks Referensi (Teks A):</label>
+                        <textarea id="text-1" rows="3">Arsitektur RAG membutuhkan embedding models berkecepatan tinggi untuk retrieval dokumen.</textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="text-2">Teks Target (Teks B):</label>
+                        <textarea id="text-2" rows="3">Retrieval Augmented Generation menggunakan vector search untuk mencari konteks relevan.</textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="model-select">Pilih Model Embedding Simulator:</label>
+                        <select id="model-select" class="form-control">
+                            <option value="openai">OpenAI text-embedding-3-small (1536 dim)</option>
+                            <option value="gemini">Google Gemini text-embedding-004 (768 dim)</option>
+                            <option value="cohere">Cohere embed-multilingual-v3.0 (1024 dim)</option>
+                            <option value="minilm" selected>Sentence Transformers all-MiniLM-L6-v2 (384 dim)</option>
+                            <option value="bge">Hugging Face BAAI/bge-small-en-v1.5 (384 dim)</option>
+                            <option value="jina">Jina AI jina-embeddings-v2 (768 dim)</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="matryoshka-range">Matryoshka Dimension Truncation: <span id="dim-val-display" class="highlight-text">384</span> Dimensi</label>
+                        <input type="range" id="matryoshka-range" min="32" max="1536" step="32" value="384" class="range-slider">
+                    </div>
+
+                    <button class="btn btn-primary" onclick="calculateSimilarity()">🚀 Jalankan Ekstraksi Vector & Hitung Similarity</button>
+                </div>
+
+                <!-- Right Column: Results & Visualization -->
+                <div class="glass-panel">
+                    <h3>2. Hasil Kalkulasi & Visualisasi Vektor</h3>
+
+                    <div class="metrics-grid">
+                        <div class="metric-card">
+                            <div class="metric-title">Cosine Similarity</div>
+                            <div class="metric-value" id="res-cosine">0.8742</div>
+                            <div class="metric-desc">Orientasi Arah (Range: -1 s/d 1)</div>
+                        </div>
+
+                        <div class="metric-card">
+                            <div class="metric-title">Dot Product</div>
+                            <div class="metric-value" id="res-dot">0.8742</div>
+                            <div class="metric-desc">Normalisasi Magnitudo Vektor</div>
+                        </div>
+
+                        <div class="metric-card">
+                            <div class="metric-title">Euclidean Distance</div>
+                            <div class="metric-value" id="res-euclidean">0.5016</div>
+                            <div class="metric-desc">Jarak L2 Geometris Ruang Vektor</div>
+                        </div>
+                    </div>
+
+                    <div class="vector-viz-container">
+                        <h4>Visualisasi Vektor Teks A vs Teks B (Heatmap Slice):</h4>
+                        <div class="vector-bar-label">Teks A Vector Slice:</div>
+                        <div class="vector-heatmap" id="heatmap-a"></div>
+
+                        <div class="vector-bar-label">Teks B Vector Slice:</div>
+                        <div class="vector-heatmap" id="heatmap-b"></div>
+                    </div>
+
+                    <div class="vector-preview-box">
+                        <label>Dense Array Preview (First 10 Values Teks A):</label>
+                        <div id="vector-array-preview" class="code-preview">[0.0421, -0.1189, 0.2031, 0.0894, -0.0312, ...]</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Tab 3: Comparison Matrix -->
+        <section id="tab-matrix" class="tab-content">
+            <div class="section-intro">
+                <h2>Embedding Models Matrix & MTEB Leaderboard</h2>
+                <p>Matriks komparasi lengkap antara model Proprietary dan Open Source berdasarkan metrik industri.</p>
+            </div>
+
+            <div class="table-controls">
+                <input type="text" id="matrix-search" placeholder="🔍 Cari nama model atau provider..." onkeyup="filterTable()">
+                <div class="filter-buttons">
+                    <button class="filter-btn active" onclick="filterCategory('all')">Semua Model</button>
+                    <button class="filter-btn" onclick="filterCategory('Proprietary')">Proprietary Only</button>
+                    <button class="filter-btn" onclick="filterCategory('Open Source')">Open Source Only</button>
+                </div>
+            </div>
+
+            <div class="table-responsive glass-panel">
+                <table class="data-table" id="comparison-table">
+                    <thead>
+                        <tr>
+                            <th>Model Name</th>
+                            <th>Kategori</th>
+                            <th>Provider / Host</th>
+                            <th>Dimensi</th>
+                            <th>Context Window</th>
+                            <th>MTEB Score</th>
+                            <th>Biaya / 1M Tokens</th>
+                            <th>Mode Deploy</th>
+                        </tr>
+                    </thead>
+                    <tbody id="table-body">
+                        <!-- Populated by JavaScript -->
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- Tab 4: Calculator -->
+        <section id="tab-calculator" class="tab-content">
+            <div class="section-intro">
+                <h2>Vector Memory & API Cost Calculator</h2>
+                <p>Estimasi kebutuhan RAM Vector Database dan prediksi biaya API bulanan berdasarkan volume dokumen.</p>
+            </div>
+
+            <div class="grid-2">
+                <!-- RAM Estimator -->
+                <div class="glass-panel">
+                    <h3>💾 Vector Database RAM Estimator</h3>
+
+                    <div class="form-group">
+                        <label for="doc-count">Jumlah Dokumen (Jumlah Vektor):</label>
+                        <input type="number" id="doc-count" value="1000000" step="100000" class="form-control" oninput="calculateEstimates()">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="dim-count">Dimensi Vektor Per Model:</label>
+                        <select id="dim-count" class="form-control" onchange="calculateEstimates()">
+                            <option value="1536">1,536 Dimensi (OpenAI text-embedding-3-small)</option>
+                            <option value="3072">3,072 Dimensi (OpenAI text-embedding-3-large)</option>
+                            <option value="1024">1,024 Dimensi (Cohere embed-v3)</option>
+                            <option value="768" selected>768 Dimensi (Gemini / Jina / MiniLM 768)</option>
+                            <option value="384">384 Dimensi (Sentence-Transformers MiniLM/BGE)</option>
+                            <option value="512">512 Dimensi (Truncated OpenAI 512)</option>
+                        </select>
+                    </div>
+
+                    <div class="calc-results">
+                        <div class="calc-row">
+                            <span>Float32 (Standard Uncompressed):</span>
+                            <strong id="ram-float32" class="highlight-text">3.07 GB</strong>
+                        </div>
+                        <div class="calc-row">
+                            <span>Int8 Quantized (Cohere / FAISS HNSW):</span>
+                            <strong id="ram-int8">0.77 GB (Hemat 75%)</strong>
+                        </div>
+                        <div class="calc-row">
+                            <span>Binary / Bit Packed (Binary Vector DB):</span>
+                            <strong id="ram-binary">0.10 GB (Hemat 96%)</strong>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- API Cost Estimator -->
+                <div class="glass-panel">
+                    <h3>💵 Estimasi Biaya API Cloud Monthly</h3>
+
+                    <div class="form-group">
+                        <label for="token-monthly">Total Token yang Diproses per Bulan (Juta Token):</label>
+                        <input type="number" id="token-monthly" value="50" step="5" class="form-control" oninput="calculateEstimates()">
+                    </div>
+
+                    <div class="cost-breakdown-list">
+                        <div class="cost-item">
+                            <div>
+                                <strong>OpenAI text-embedding-3-small</strong>
+                                <div class="sub-text">$0.02 / 1M Tokens</div>
+                            </div>
+                            <span id="cost-openai" class="cost-badge">$1.00 / bulan</span>
+                        </div>
+
+                        <div class="cost-item">
+                            <div>
+                                <strong>Google Gemini text-embedding-004</strong>
+                                <div class="sub-text">$0.025 / 1M Tokens</div>
+                            </div>
+                            <span id="cost-gemini" class="cost-badge">$1.25 / bulan</span>
+                        </div>
+
+                        <div class="cost-item">
+                            <div>
+                                <strong>Cohere embed-multilingual-v3.0</strong>
+                                <div class="sub-text">$0.10 / 1M Tokens</div>
+                            </div>
+                            <span id="cost-cohere" class="cost-badge">$5.00 / bulan</span>
+                        </div>
+
+                        <div class="cost-item">
+                            <div>
+                                <strong>Open Source Models (Local Host)</strong>
+                                <div class="sub-text">Sentence-Transformers, BGE, Jina</div>
+                            </div>
+                            <span id="cost-os" class="cost-badge free-badge">$0.00 (Self-Hosted)</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Footer -->
+        <footer class="main-footer">
+            <p>Dibuat untuk kurikulum pembelajaran <strong>AI Engineering</strong> • <a href="https://roadmap.sh/ai-engineer" target="_blank">roadmap.sh/ai-engineer</a></p>
+        </footer>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>

@@ -1,0 +1,28 @@
+# ===============================================================================
+# DEPENDENSI PYTHON UNTUK APLIKASI AI ENGINEERING (FULL STACK PROD)
+# ===============================================================================
+
+# 1. Core HTTP & Environment Management
+python-dotenv>=1.0.0      # Pengelolaan API Key & .env
+requests>=2.31.0          # HTTP Client untuk panggil LLM REST API
+
+# 2. Data Validation & Structured Output (Modul 3)
+pydantic>=2.5.0           # Validasi JSON & Skema Output Type-safe
+
+# 3. Vector Database & RAG Engine (Modul 4)
+chromadb>=0.4.0           # Vector Store lokal
+numpy>=1.24.0             # Operasi Vektor & Cosine Similarity
+
+# 4. Agentic AI & Frameworks (Modul 6)
+langgraph>=0.0.10         # Framework Agentic AI berbasis Graf/State
+langchain-core>=0.1.0     # Komponen fondasi LangChain
+
+# 5. Testing & Evals (Modul 7)
+pytest>=8.0.0             # Testing framework untuk AI Evals
+
+# 6. Model Context Protocol / MCP (Modul 10)
+mcp>=1.0.0                # Python SDK untuk Model Context Protocol
+
+# 7. Production API Deployment & Monitoring (Modul 11)
+fastapi>=0.110.0          # Framework High Performance REST API
+uvicorn>=0.28.0           # ASGI Web Server untuk FastAPI

@@ -1,0 +1,28 @@
+version: '3.8'
+
+services:
+  ollama:
+    image: ollama/ollama:latest
+    container_name: 04rag_ollama
+    ports:
+      - "11434:11434"
+    volumes:
+      - ollama_data:/root/.ollama
+    restart: always
+
+  chatbot:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: 04rag_chatbot
+    environment:
+      - OLLAMA_URL=http://ollama:11434/api/chat
+      - DEFAULT_MODEL=gemma3:4b
+    stdin_open: true
+    tty: true
+    depends_on:
+      - ollama
+
+volumes:
+  ollama_data:
+    driver: local

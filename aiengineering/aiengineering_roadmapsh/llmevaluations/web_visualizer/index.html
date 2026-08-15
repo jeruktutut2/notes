@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>LLM Evaluations - Interactive Learning Visualizer</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header class="app-header">
+    <div class="logo-container">
+      <div class="logo-badge">AI</div>
+      <div>
+        <h1>LLM Evaluations Visualizer</h1>
+        <p class="subtitle">roadmap.sh AI Engineer Path • Interactive Sandbox</p>
+      </div>
+    </div>
+    <div class="header-actions">
+      <span class="status-pill"><span class="dot green"></span> Live Interactive Engine</span>
+    </div>
+  </header>
+
+  <main class="container">
+    <!-- Section 1: Roadmap Diagram Visualizer (Matching User Image) -->
+    <section class="card roadmap-section">
+      <div class="section-title">
+        <h2>🗺️ Interactive Roadmap Architecture</h2>
+        <p>Klik kotak mana saja untuk membuka playground dan penjelasan detailnya.</p>
+      </div>
+
+      <div class="architecture-box">
+        <div class="top-group">
+          <div class="group-title">Evaluation Types</div>
+          <div class="nodes-grid">
+            <button class="node-btn highlighted" data-target="tab-deterministic">
+              <span class="node-title">Deterministic Evals</span>
+              <span class="node-desc">Exact Match, Regex, Levenshtein, BLEU, ROUGE</span>
+            </button>
+
+            <button class="node-btn" data-target="tab-model-based">
+              <span class="node-title">Model-Based Evals</span>
+              <span class="node-desc">LLM-as-a-Judge, G-Eval, CoT, Anti-Bias</span>
+            </button>
+
+            <button class="node-btn" data-target="tab-human">
+              <span class="node-title">Human Evals</span>
+              <span class="node-desc">HITL, Skala Likert, Cohen's Kappa, Chatbot Arena</span>
+            </button>
+
+            <button class="node-btn" data-target="tab-metrics">
+              <span class="node-title">Evaluation Metrics</span>
+              <span class="node-desc">Accuracy, F1, Perplexity & RAG Triad</span>
+            </button>
+          </div>
+        </div>
+
+        <div class="bottom-group">
+          <div class="group-title">Evaluation Tools</div>
+          <div class="tools-grid">
+            <button class="node-btn tool-btn" data-target="tab-deepeval">
+              <span class="node-title">DeepEval</span>
+              <span class="node-desc">PyTest Unit Testing for LLMs</span>
+            </button>
+
+            <button class="node-btn tool-btn" data-target="tab-ragas">
+              <span class="node-title">RAGAS</span>
+              <span class="node-desc">End-to-End RAG Assessment</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Navigation Tabs -->
+    <div class="tab-nav">
+      <button class="tab-btn active" data-tab="tab-deterministic">Deterministic Evals</button>
+      <button class="tab-btn" data-tab="tab-model-based">Model-Based (LLM Judge)</button>
+      <button class="tab-btn" data-tab="tab-human">Human Evals & Elo</button>
+      <button class="tab-btn" data-tab="tab-metrics">Metrics & RAG Triad</button>
+      <button class="tab-btn" data-tab="tab-tools">DeepEval vs RAGAS</button>
+    </div>
+
+    <!-- Tab 1: Deterministic Evals Sandbox -->
+    <section id="tab-deterministic" class="tab-content active">
+      <div class="grid-2col">
+        <div class="card">
+          <h3>🧪 Live Deterministic Evaluator</h3>
+          <div class="form-group">
+            <label>Output Candidate (LLM Response):</label>
+            <textarea id="det-candidate" rows="3">Kecerdasan Buatan adalah bidang ilmu komputer yang membuat sistem pintar.</textarea>
+          </div>
+          <div class="form-group">
+            <label>Ground Truth Reference:</label>
+            <textarea id="det-reference" rows="3">Kecerdasan Buatan merupakan cabang ilmu komputer untuk membuat sistem cerdas.</textarea>
+          </div>
+          <button id="btn-run-det" class="btn primary">Run Deterministic Metrics</button>
+        </div>
+
+        <div class="card">
+          <h3>📊 Output Results</h3>
+          <div class="metric-display">
+            <div class="metric-box">
+              <span class="m-label">Exact Match</span>
+              <span id="res-em" class="m-val">FALSE</span>
+            </div>
+            <div class="metric-box">
+              <span class="m-label">Levenshtein Sim</span>
+              <span id="res-lev" class="m-val">0.0%</span>
+            </div>
+            <div class="metric-box">
+              <span class="m-label">BLEU-4 Score</span>
+              <span id="res-bleu" class="m-val">0.00</span>
+            </div>
+            <div class="metric-box">
+              <span class="m-label">ROUGE-1 F1</span>
+              <span id="res-rouge1" class="m-val">0.00</span>
+            </div>
+            <div class="metric-box">
+              <span class="m-label">ROUGE-L F1</span>
+              <span id="res-rougel" class="m-val">0.00</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Tab 2: Model-Based Evals (LLM-as-a-Judge) -->
+    <section id="tab-model-based" class="tab-content">
+      <div class="card">
+        <h3>⚖️ LLM-as-a-Judge & G-Eval Simulator</h3>
+        <p>Uji Single Grading (1-5), G-Eval Chain-of-Thought, dan saklar anti-bias <strong>Position Swapping</strong>.</p>
+        
+        <div class="grid-2col">
+          <div>
+            <div class="form-group">
+              <label>User Query:</label>
+
+              <input type="text" id="judge-query" value="Jelaskan alur kerja Retrieval-Augmented Generation (RAG).">
+            </div>
+            <div class="form-group">
+              <label>Model A Output:</label>
+              <textarea id="judge-resp-a" rows="3">RAG mengambil chunk relevan dari Vector Database menggunakan embedding, lalu mengirimnya ke LLM sebagai konteks.</textarea>
+            </div>
+            <div class="form-group">
+              <label>Model B Output:</label>
+              <textarea id="judge-resp-b" rows="3">RAG adalah alat AI serbaguna yang membuat model menjadi pintar dan terhubung dengan google.</textarea>
+            </div>
+
+            <div class="checkbox-group">
+              <label><input type="checkbox" id="chk-position-swap" checked> Aktifkan Position Swapping Anti-Bias</label>
+            </div>
+
+            <button id="btn-run-judge" class="btn primary">Evaluate with LLM Judge</button>
+          </div>
+
+          <div class="judge-results">
+            <h4>Judge Verdict</h4>
+            <div class="winner-badge" id="judge-winner">Pemenang: -</div>
+            <div class="bias-indicator" id="bias-status">Position Bias: Checked</div>
+            
+            <div class="cot-box">
+              <label>Chain-of-Thought (CoT) Reasoning:</label>
+              <div id="judge-cot-text" class="cot-text">Klik 'Evaluate with LLM Judge' untuk menjalankan simulasi evaluasi CoT.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Tab 3: Human Evals & Chatbot Arena Elo -->
+    <section id="tab-human" class="tab-content">
+      <div class="grid-2col">
+        <div class="card">
+          <h3>🗳️ Chatbot Arena Blind Voting</h3>
+          <p>Pilih respons mana yang lebih baik secara objektif untuk memperbarui ELO rating model!</p>
+
+          <div class="arena-prompt">
+            <strong>Prompt:</strong> "Tuliskan fungsi Python untuk memeriksa bilangan prima."
+          </div>
+
+          <div class="arena-comparison">
+            <div class="arena-option">
+              <h4>Model Alpha</h4>
+              <pre><code>def is_prime(n):
+    if n <= 1: return False
+    for i in range(2, int(n**0.5) + 1):
+        if n % i == 0: return False
+    return True</code></pre>
+              <button class="btn success vote-btn" data-vote="alpha">Vote Model Alpha</button>
+            </div>
+
+            <div class="arena-option">
+              <h4>Model Beta</h4>
+              <pre><code>def is_prime(n):
+    return n % 2 != 0</code></pre>
+              <button class="btn success vote-btn" data-vote="beta">Vote Model Beta</button>
+            </div>
+          </div>
+          <button class="btn secondary vote-btn" data-vote="tie" style="width: 100%; margin-top: 12px;">Vote Tie (Seri)</button>
+        </div>
+
+        <div class="card">
+          <h3>🏆 Live Arena Elo Leaderboard</h3>
+          <table class="elo-table">
+            <thead>
+              <tr>
+                <th>Rank</th>
+                <th>Model Name</th>
+                <th>Elo Rating</th>
+              </tr>
+            </thead>
+            <tbody id="elo-leaderboard-body">
+              <!-- Dynamically Populated by app.js -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- Tab 4: Metrics & RAG Triad -->
+    <section id="tab-metrics" class="tab-content">
+      <div class="card">
+        <h3>🔺 Interactive RAG Triad Visualizer</h3>
+        <p>Geser nilai komponen RAG Triad di bawah ini untuk melihat dampaknya terhadap kesehatan arsitektur RAG secara keseluruhan.</p>
+
+        <div class="grid-2col">
+          <div class="sliders-pane">
+            <div class="slider-group">
+              <label>Faithfulness (Anti-Halusinasi): <span id="val-faith">90%</span></label>
+              <input type="range" id="slide-faith" min="0" max="100" value="90">
+            </div>
+
+            <div class="slider-group">
+              <label>Answer Relevance (Kesesuaian Jawaban): <span id="val-relev">85%</span></label>
+              <input type="range" id="slide-relev" min="0" max="100" value="85">
+            </div>
+
+            <div class="slider-group">
+              <label>Context Precision (Akurasi Retrieval): <span id="val-prec">95%</span></label>
+              <input type="range" id="slide-prec" min="0" max="100" value="95">
+            </div>
+          </div>
+
+          <div class="triad-visual-pane">
+            <div class="triad-score-circle">
+              <span id="triad-overall-num">90</span>
+              <span class="triad-unit">/ 100</span>
+              <span class="triad-status-label" id="triad-status-text">EXCELLENT RAG PIPELINE</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Tab 5: DeepEval vs RAGAS Tools Comparison -->
+    <section id="tab-tools" class="tab-content">
+      <div class="card">
+        <h3>⚔️ Frameworks & Tools Comparison Matrix</h3>
+
+        <table class="comparison-table">
+          <thead>
+            <tr>
+              <th>Fitur / Fitur Utama</th>
+              <th>DeepEval (Confident AI)</th>
+              <th>RAGAS (RAG Assessment)</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>Spesialisasi Utama</strong></td>
+              <td>LLM Unit Testing & CI/CD PyTest Integration</td>
+              <td>End-to-End RAG Component Assessment</td>
+            </tr>
+            <tr>
+              <td><strong>Metrik Utama</strong></td>
+              <td>GEval, AnswerRelevancy, Hallucination, Toxicity</td>
+              <td>Faithfulness, Answer Relevance, Context Precision/Recall</td>
+            </tr>
+            <tr>
+              <td><strong>Sintetis Data Generator</strong></td>
+              <td>Evol-Instruct Generator</td>
+              <td>Knowledge Graph & Evolutionary Prompting</td>
+            </tr>
+            <tr>
+              <td><strong>Ekosistem CLI</strong></td>
+              <td><code>deepeval test run</code></td>
+              <td>Integrasi LangChain / LlamaIndex / Python API</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+  </main>
+
+  <script src="app.js"></script>
+</body>
+</html>

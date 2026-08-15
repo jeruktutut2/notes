@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Model Context Protocol (MCP) - Interactive Visualizer & Playground</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <header class="app-header">
+        <div class="logo-container">
+            <div class="logo-icon">⚡</div>
+            <div>
+                <h1>Model Context Protocol (MCP)</h1>
+                <p class="subtitle">Interactive Architecture Visualizer & Protocol Playground</p>
+            </div>
+        </div>
+        <div class="badge-roadmap">roadmap.sh AI Engineer</div>
+    </header>
+
+    <nav class="nav-tabs">
+        <button class="nav-btn active" data-tab="architecture">🏛️ Architecture & Diagram</button>
+        <button class="nav-btn" data-tab="inspector">🔍 Live JSON-RPC Inspector</button>
+        <button class="nav-btn" data-tab="sandbox">🧪 Host-Client-Server Sandbox</button>
+        <button class="nav-btn" data-tab="transports">📡 Stdio vs SSE Transports</button>
+        <button class="nav-btn" data-tab="devguide">💻 Developer Guide & Lab</button>
+    </nav>
+
+    <main class="content-container">
+        <!-- TAB 1: ARCHITECTURE & DIAGRAM -->
+        <section id="architecture" class="tab-content active">
+            <div class="section-intro">
+                <h2>Diagram Komponen Utama MCP</h2>
+                <p>Visualisasi struktur arsitektur sesuai roadmap AI Engineer dan diagram acuan.</p>
+            </div>
+
+            <div class="diagram-wrapper">
+                <div class="diagram-container">
+                    <div class="diagram-title">Model Context Protocol</div>
+
+                    <!-- CORE COMPONENTS BOX -->
+                    <div class="component-box core-box">
+                        <div class="box-header">Core Components</div>
+                        
+                        <div class="row-two">
+                            <div class="card-item interactive-card" data-component="host">
+                                <div class="card-icon">🖥️</div>
+                                <div class="card-label">MCP Host</div>
+                            </div>
+                            <div class="card-item interactive-card" data-component="client">
+                                <div class="card-icon">🔗</div>
+                                <div class="card-label">MCP Client</div>
+                            </div>
+                        </div>
+
+                        <div class="card-item full-width interactive-card" data-component="server">
+                            <div class="card-icon">⚙️</div>
+                            <div class="card-label">MCP Server</div>
+                        </div>
+
+                        <div class="card-item full-width interactive-card" data-component="datalayer">
+                            <div class="card-icon">📦</div>
+                            <div class="card-label">Data Layer (Resources, Prompts, Tools)</div>
+                        </div>
+
+                        <div class="card-item full-width interactive-card" data-component="transport">
+                            <div class="card-icon">📡</div>
+                            <div class="card-label">Transport Layer (stdio, SSE / HTTP)</div>
+                        </div>
+                    </div>
+
+                    <!-- DEVELOPING WITH MCP BOX -->
+                    <div class="component-box dev-box">
+                        <div class="box-header">Developing with MCP</div>
+                        
+                        <div class="card-item full-width interactive-card" data-component="build-server">
+                            <div class="card-icon">🏗️</div>
+                            <div class="card-label">Building an MCP Server</div>
+                        </div>
+
+                        <div class="card-item full-width interactive-card" data-component="build-client">
+                            <div class="card-icon">🤖</div>
+                            <div class="card-label">Building an MCP Client</div>
+                        </div>
+
+                        <div class="card-item full-width interactive-card" data-component="connect-local">
+                            <div class="card-icon">💻</div>
+                            <div class="card-label">Connect to Local Server</div>
+                        </div>
+
+                        <div class="card-item full-width interactive-card" data-component="connect-remote">
+                            <div class="card-icon">🌐</div>
+                            <div class="card-label">Connect to Remote Server</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- DETAIL PANEL -->
+                <div class="detail-panel" id="component-detail-panel">
+                    <h3 id="detail-title">Klik Komponen untuk Detail</h3>
+                    <p id="detail-desc">Pilih salah satu komponen pada diagram di sebelah kiri untuk melihat penjelasan arsitektur, spesifikasi protokol, dan contoh kodenya.</p>
+                    <div id="detail-extra" class="detail-extra-box"></div>
+                </div>
+            </div>
+        </section>
+
+        <!-- TAB 2: LIVE JSON-RPC INSPECTOR -->
+        <section id="inspector" class="tab-content">
+            <div class="section-intro">
+                <h2>Live JSON-RPC 2.0 Message Inspector</h2>
+                <p>Simulasikan dan periksa pertukaran frame JSON-RPC secara real-time antara MCP Client dan MCP Server.</p>
+            </div>
+
+            <div class="inspector-grid">
+                <div class="inspector-controls">
+                    <h3>Pilih Metode MCP Request</h3>
+                    <div class="btn-group">
+                        <button class="preset-btn active" data-req="initialize">1. initialize</button>
+                        <button class="preset-btn" data-req="notifications_initialized">2. initialized (notif)</button>
+                        <button class="preset-btn" data-req="resources_list">3. resources/list</button>
+                        <button class="preset-btn" data-req="resources_read">4. resources/read</button>
+                        <button class="preset-btn" data-req="prompts_list">5. prompts/list</button>
+                        <button class="preset-btn" data-req="tools_list">6. tools/list</button>
+                        <button class="preset-btn" data-req="tools_call">7. tools/call</button>
+                        <button class="preset-btn" data-req="ping">8. ping</button>
+                    </div>
+
+                    <h3>Request Frame Payload (Editable JSON)</h3>
+                    <textarea id="json-request-input" rows="10"></textarea>
+                    
+                    <button class="action-btn glow-btn" id="send-jsonrpc-btn">🚀 Send Request to Simulated Server</button>
+                </div>
+
+                <div class="inspector-output">
+                    <h3>Response Frame Payload (JSON-RPC 2.0 Result)</h3>
+                    <pre class="json-code" id="json-response-output">// Response akan muncul di sini setelah request dikirim</pre>
+                    
+                    <h3>Timeline Log Message Exchange</h3>
+                    <div class="log-container" id="inspector-logs">
+                        <div class="log-item info">Ready to inspect MCP messages...</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- TAB 3: HOST-CLIENT-SERVER SANDBOX -->
+        <section id="sandbox" class="tab-content">
+            <div class="section-intro">
+                <h2>Host-Client-Server Interactive Sandbox</h2>
+                <p>Simulasi lingkungan aplikasi AI Agent lengkap yang mengintegrasikan MCP Client dan MCP Server.</p>
+            </div>
+
+            <div class="sandbox-layout">
+                <div class="sandbox-card host-card">
+                    <div class="sandbox-card-header">
+                        <span>🖥️ MCP Host App</span>
+                        <select id="host-app-select">
+                            <option value="Claude Desktop">Claude Desktop</option>
+                            <option value="VS Code Extension">VS Code Extension</option>
+                            <option value="Custom AI Agent">Custom Python Agent</option>
+                        </select>
+                    </div>
+                    <div class="sandbox-body">
+                        <label>User Query ke LLM:</label>
+                        <input type="text" id="user-prompt-input" value="Berapa hasil dari 50 * 12 + 100 dan baca catatan roadmap?" />
+                        <button class="action-btn" id="run-agent-loop-btn">⚡ Run LLM Agent Query</button>
+
+                        <div class="agent-thought-box" id="agent-thought">
+                            <em>Status: Menunggu instruksi...</em>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="sandbox-card server-card">
+                    <div class="sandbox-card-header">
+                        <span>⚙️ MCP Server Capabilities</span>
+                    </div>
+                    <div class="sandbox-body">
+                        <div class="capability-list">
+                            <div class="cap-group">
+                                <strong>📁 Resources (2)</strong>
+                                <ul>
+                                    <li><code>notes://readme.md</code></li>
+                                    <li><code>config://system-metrics</code></li>
+                                </ul>
+                            </div>
+                            <div class="cap-group">
+                                <strong>🛠️ Tools (2)</strong>
+                                <ul>
+                                    <li><code>calculate_expr(expression)</code></li>
+                                    <li><code>write_note(uri, content)</code></li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="sandbox-output-card">
+                <h3>📜 Live Execution Trace & Tool Call Logs</h3>
+                <div id="sandbox-execution-log" class="execution-log-box">
+                    <div class="log-line text-muted">Klik "Run LLM Agent Query" untuk melihat alur kerja MCP secara langsung...</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- TAB 4: STDIO VS SSE TRANSPORTS -->
+        <section id="transports" class="tab-content">
+            <div class="section-intro">
+                <h2>Transport Layer: Stdio vs SSE / HTTP</h2>
+                <p>Pelajari perbedaan mendasar antara komunikasi saluran lokal Stdio dan saluran remote SSE.</p>
+            </div>
+
+            <div class="transports-grid">
+                <div class="transport-card">
+                    <div class="trans-header stdio-color">
+                        <h3>📟 Stdio Transport (Local Subprocess)</h3>
+                        <span class="badge">Sangat Cepat</span>
+                    </div>
+                    <div class="trans-body">
+                        <p>Menggunakan pipe <code>stdin</code> dan <code>stdout</code> dari subprocess lokal. Setiap pesan JSON-RPC diakhiri baris baru (<code>\n</code>).</p>
+                        
+                        <div class="interactive-demo-box">
+                            <button class="trans-btn" id="sim-stdio-btn">▶️ Simulasikan Frame Stdio</button>
+                            <div class="frame-preview" id="stdio-frame-preview">Pilih tombol untuk mensimulasikan...</div>
+                        </div>
+
+                        <ul>
+                            <li>✅ Tidak membutuhkan Port Jaringan / Firewall</li>
+                            <li>✅ Sangat aman (terisolasi di mesin lokal)</li>
+                            <li>❌ Hanya bisa berjalan di mesin yang sama</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="transport-card">
+                    <div class="trans-header sse-color">
+                        <h3>🌐 SSE / HTTP Transport (Remote Cloud)</h3>
+                        <span class="badge">Cloud & Remote</span>
+                    </div>
+                    <div class="trans-body">
+                        <p>Menggunakan HTTP GET untuk Server-Sent Events stream (Server -> Client) dan HTTP POST (Client -> Server).</p>
+                        
+                        <div class="interactive-demo-box">
+                            <button class="trans-btn" id="sim-sse-btn">▶️ Simulasikan Frame SSE</button>
+                            <div class="frame-preview" id="sse-frame-preview">Pilih tombol untuk mensimulasikan...</div>
+                        </div>
+
+                        <ul>
+                            <li>✅ Dapat diakses antar server melalui internet</li>
+                            <li>✅ Mendukung autentikasi Bearer Token & TLS/HTTPS</li>
+                            <li>❌ Membutuhkan manajemen port & koneksi jaringan</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- TAB 5: DEVELOPER GUIDE -->
+        <section id="devguide" class="tab-content">
+            <div class="section-intro">
+                <h2>Developer Guide & Code Snippets</h2>
+                <p>Panduan langkah demi langkah dalam membangun MCP Server & Client menggunakan Python.</p>
+            </div>
+
+            <div class="guide-container">
+                <div class="guide-nav">
+                    <button class="guide-tab-btn active" data-guide="server-code">Building MCP Server</button>
+                    <button class="guide-tab-btn" data-guide="client-code">Building MCP Client</button>
+                    <button class="guide-tab-btn" data-guide="local-code">Connect Local Server</button>
+                    <button class="guide-tab-btn" data-guide="remote-code">Connect Remote Server</button>
+                </div>
+
+                <div class="guide-code-box">
+                    <pre><code id="guide-code-display">// Select a guide tab above to view Python code</code></pre>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="app-footer">
+        <p>Model Context Protocol (MCP) Learning Workspace • Based on <a href="https://roadmap.sh/ai-engineer" target="_blank" style="color: #60a5fa;">roadmap.sh/ai-engineer</a></p>
+    </footer>
+
+    <script src="app.js"></script>
+</body>
+</html>

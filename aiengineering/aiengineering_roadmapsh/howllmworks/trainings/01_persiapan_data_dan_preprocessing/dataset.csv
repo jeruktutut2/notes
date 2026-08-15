@@ -1,0 +1,11 @@
+id,nama,umur,pendapatan,ulasan
+1,Budi,25,5000,"<p>Barang bagus banget! Fast response. <b>Recommended!</b></p>"
+2,Ani,,6000,
+3,Joko,30,5500,"Produk rusak pas sampai! http://example.com/bukti.jpg Sangat kecewa."
+4,,22,,
+5,Siti,150,7000,"   "
+6,Rudi,28,6200,"Pengiriman cepat &amp; aman. Terimakasih!"
+7,Dewi,35,8000,"<div class='review'>Biasa aja sih, Nothing special...</div>"
+8,Eko,40,,
+9,Rina,29,5800,"Sangat memuaskan! Pelayanan ramah bintang 5. https://shop.com/product"
+10,Tono,33,7100,"<script>alert('xss')</script> Kualitas mantap pool!"

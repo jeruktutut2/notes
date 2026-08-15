@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Multimodal AI - Interactive Visualizer & Learning Lab</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600&family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="app-container">
+        <!-- Header Nav -->
+        <header class="app-header">
+            <div class="logo-group">
+                <div class="logo-badge">🎨 MULTIMODAL</div>
+                <div class="logo-text">
+                    <h1>Multimodal AI Learning Lab</h1>
+                    <p>Visualizer & Interactive Simulator - roadmap.sh/ai-engineer</p>
+                </div>
+            </div>
+            <nav class="nav-tabs">
+                <button class="nav-btn active" data-tab="tab-roadmap">🗺️ Roadmap Diagram</button>
+                <button class="nav-btn" data-tab="tab-vision">🖼️ Vision & Image Lab</button>
+                <button class="nav-btn" data-tab="tab-audio">🎙️ Speech & Audio Lab</button>
+                <button class="nav-btn" data-tab="tab-pipeline">⚙️ Execution Pipeline</button>
+                <button class="nav-btn" data-tab="tab-sdk">🧱 SDK & Framework Sandbox</button>
+            </nav>
+        </header>
+
+        <!-- Main Content Body -->
+        <main class="main-content">
+            <!-- TAB 1: ROADMAP DIAGRAM -->
+            <section id="tab-roadmap" class="tab-pane active">
+                <div class="section-header">
+                    <h2>🗺️ AI Engineer Roadmap: Multimodal AI Architecture</h2>
+                    <p>Diagram interaktif persis sesuai gambar referensi. Klik setiap node kartu untuk melihat detail teknisnya.</p>
+                </div>
+
+                <div class="roadmap-interactive-wrapper">
+                    <!-- Top Container: Multimodal AI Usecases -->
+                    <div class="roadmap-card-box top-section-box">
+                        <div class="card-header-banner">
+                            <h3>Multimodal AI Usecases</h3>
+                        </div>
+                        <div class="yellow-cards-grid">
+                            <div class="yellow-card" data-topic="img-understanding">
+                                <span>Image Understanding</span>
+                            </div>
+                            <div class="yellow-card" data-topic="img-generation">
+                                <span>Image Generation</span>
+                            </div>
+                            <div class="yellow-card" data-topic="vid-understanding">
+                                <span>Video Understanding</span>
+                            </div>
+                            <div class="yellow-card" data-topic="audio-proc">
+                                <span>Audio Processing</span>
+                            </div>
+                            <div class="yellow-card" data-topic="tts">
+                                <span>Text-to-Speech</span>
+                            </div>
+                            <div class="yellow-card" data-topic="stt">
+                                <span>Speech-to-Text</span>
+                            </div>
+                        </div>
+
+                        <div class="middle-section-title">
+                            <h4>Multimodal AI Tasks</h4>
+                        </div>
+
+                        <div class="yellow-cards-grid lower-grid">
+                            <div class="yellow-card" data-topic="openai-vision">
+                                <span>OpenAI Vision API</span>
+                            </div>
+                            <div class="yellow-card" data-topic="dalle-api">
+                                <span>DALL-E API</span>
+                            </div>
+                            <div class="yellow-card" data-topic="nanobanana-api">
+                                <span>NanoBanana API</span>
+                            </div>
+                            <div class="yellow-card" data-topic="whisper-api">
+                                <span>Whisper API</span>
+                            </div>
+                            <div class="yellow-card" data-topic="hf-models">
+                                <span>Hugging Face Models</span>
+                            </div>
+                            <div class="yellow-card" data-topic="langchain-multimodal">
+                                <span>LangChain for Multimodal Apps</span>
+                            </div>
+                            <div class="yellow-card full-width-card" data-topic="llamaindex-multimodal">
+                                <span>LlamaIndex for Multimodal Apps</span>
+                            </div>
+                        </div>
+
+                        <div class="card-footer-banner">
+                            <h3>Implementing Multimodal AI</h3>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Detail Inspector Panel -->
+                <div id="roadmap-inspector" class="inspector-panel">
+                    <div class="inspector-header">
+                        <h4 id="inspector-title">💡 Klik salah satu kartu di atas untuk melihat detail</h4>
+                        <span class="badge" id="inspector-badge">Info</span>
+                    </div>
+                    <div class="inspector-body" id="inspector-body">
+                        Pilih kartu warna kuning pada diagram arsitektur di atas untuk mengeksplorasi penjelasan konsep, contoh skrip Python, dan arsitektur model.
+                    </div>
+                </div>
+            </section>
+
+            <!-- TAB 2: VISION & IMAGE LAB -->
+            <section id="tab-vision" class="tab-pane">
+                <div class="section-header">
+                    <h2>🖼️ Vision & Image Playground</h2>
+                    <p>Uji coba simulasi Visual Question Answering (VQA) dan Latent Diffusion Image Generation.</p>
+                </div>
+
+                <div class="lab-grid">
+                    <!-- VQA Box -->
+                    <div class="lab-card">
+                        <h3>👁️ Visual Question Answering (VQA)</h3>
+                        <div class="form-group">
+                            <label>Pilih Gambar Sample:</label>
+                            <select id="vqa-img-select">
+                                <option value="architect">Diagram Arsitektur Multimodal AI</option>
+                                <option value="cctv">CCTV Toko Retail (Deteksi Objek)</option>
+                                <option value="receipt">Struk Kasir Transaksi (OCR)</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Pertanyaan Anda (Prompt Teks):</label>
+                            <input type="text" id="vqa-prompt" value="Apa isi komponen utama pada gambar ini?">
+                        </div>
+                        <button class="action-btn" id="btn-run-vqa">▶️ Jalankan Vision Reasoning</button>
+                        <div class="console-box" id="vqa-output">Hasil VQA akan ditampilkan di sini...</div>
+                    </div>
+
+                    <!-- Diffusion Box -->
+                    <div class="lab-card">
+                        <h3>🎨 Latent Diffusion Image Generator</h3>
+                        <div class="form-group">
+                            <label>Prompt Positif:</label>
+                            <input type="text" id="diff-prompt" value="Futuristic neon cyberpunk city, 8k resolution cinematic photo">
+                        </div>
+                        <div class="form-group">
+                            <label>CFG Guidance Scale (1.0 - 15.0):</label>
+                            <input type="range" id="diff-cfg" min="1" max="15" value="7.5" step="0.5">
+                            <span id="diff-cfg-val">7.5</span>
+                        </div>
+                        <button class="action-btn" id="btn-run-diffusion">🎨 Generasi Gambar (Simulasi Sampling)</button>
+                        <div class="canvas-preview" id="diff-preview">
+                            <div class="canvas-placeholder">🖼️ Preview Output Canvas [1024x1024]</div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- TAB 3: SPEECH & AUDIO LAB -->
+            <section id="tab-audio" class="tab-pane">
+                <div class="section-header">
+                    <h2>🎙️ Speech & Audio Processing Lab</h2>
+                    <p>Simulasi transmisi gelombang suara, ekstraksi Mel-Spectrogram, Whisper STT, dan Voice Synthesis TTS.</p>
+                </div>
+
+                <div class="lab-grid">
+                    <!-- STT Box -->
+                    <div class="lab-card">
+                        <h3>🎙️ Whisper Speech-to-Text (STT)</h3>
+                        <div class="form-group">
+                            <label>Pilih Sampel Suara Audio:</label>
+                            <select id="stt-audio-select">
+                                <option value="podcast">Podcast Bahasa Indonesia (16kHz Mono)</option>
+                                <option value="callcenter">Percakapan Call Center Customer Support</option>
+                            </select>
+                        </div>
+                        <button class="action-btn" id="btn-run-stt">🎙️ Transkripsikan dengan Whisper</button>
+                        <div class="waveform-box">
+                            <div class="wave-bar" style="height: 40%"></div>
+                            <div class="wave-bar" style="height: 80%"></div>
+                            <div class="wave-bar" style="height: 60%"></div>
+                            <div class="wave-bar" style="height: 100%"></div>
+                            <div class="wave-bar" style="height: 30%"></div>
+                            <div class="wave-bar" style="height: 75%"></div>
+                        </div>
+                        <div class="console-box" id="stt-output">Hasil transkripsi & subtitle SRT akan muncul di sini...</div>
+                    </div>
+
+                    <!-- TTS Box -->
+                    <div class="lab-card">
+                        <h3>🗣️ Neural Vocoder Text-to-Speech (TTS)</h3>
+                        <div class="form-group">
+                            <label>Teks Sintesis Suara:</label>
+                            <textarea id="tts-input-text" rows="3">Selamat datang di platform kecerdasan buatan multimodal AI Engineer.</textarea>
+                        </div>
+                        <div class="form-group">
+                            <label>Target Voice Model:</label>
+                            <select id="tts-voice-select">
+                                <option value="female-id">Indonesian Female Voice (Standard)</option>
+                                <option value="male-cloned">Indonesian Male Voice (Cloned)</option>
+                            </select>
+                        </div>
+                        <button class="action-btn" id="btn-run-tts">🗣️ Sintesiskan Suara (HiFi-GAN)</button>
+                        <div class="console-box" id="tts-output">Status Vocoder WAV synthesis akan muncul di sini...</div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- TAB 4: EXECUTION PIPELINE -->
+            <section id="tab-pipeline" class="tab-pane">
+                <div class="section-header">
+                    <h2>⚙️ Multimodal Execution Pipeline</h2>
+                    <p>Alur langkah-demi-langkah pemrosesan multimodal data dari mentah hingga inferensi LLM.</p>
+                </div>
+
+                <div class="pipeline-container">
+                    <div class="pipeline-step" id="pipe-step-1">
+                        <div class="step-num">1</div>
+                        <div class="step-content">
+                            <h4>Multimodal Input Loading</h4>
+                            <p>Menerima file Teks, Base64 Gambar, dan WAV Audio.</p>
+                        </div>
+                    </div>
+                    <div class="pipeline-arrow">➔</div>
+                    <div class="pipeline-step" id="pipe-step-2">
+                        <div class="step-num">2</div>
+                        <div class="step-content">
+                            <h4>Feature Encoders</h4>
+                            <p>ViT Patch Tokens & Audio Log Mel-Spectrogram Extraction.</p>
+                        </div>
+                    </div>
+                    <div class="pipeline-arrow">➔</div>
+                    <div class="pipeline-step" id="pipe-step-3">
+                        <div class="step-num">3</div>
+                        <div class="step-content">
+                            <h4>Linear Projection & Cross-Attention</h4>
+                            <p>Penyelarasan Vektor ke Unified LLM Embedding Space.</p>
+                        </div>
+                    </div>
+                    <div class="pipeline-arrow">➔</div>
+                    <div class="pipeline-step" id="pipe-step-4">
+                        <div class="step-num">4</div>
+                        <div class="step-content">
+                            <h4>LLM Unified Inferencing</h4>
+                            <p>Autoregressive Generation & Task Output Synthesis.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div style="text-align: center; margin-top: 20px;">
+                    <button class="action-btn" id="btn-simulate-pipeline" style="max-width: 300px;">🚀 Menjalankan Pipeline Simulation</button>
+                </div>
+                <div class="console-box" id="pipeline-console" style="margin-top: 20px; min-height: 120px;">
+                    Klik tombol di atas untuk menyimulasikan aliran data melalui pipeline multimodal...
+                </div>
+            </section>
+
+            <!-- TAB 5: SDK SANDBOX -->
+            <section id="tab-sdk" class="tab-pane">
+                <div class="section-header">
+                    <h2>🧱 SDK & Framework Interactive Sandbox</h2>
+                    <p>Pilih SDK dan jalankan kode skrip Python simulasi secara langsung dari browser.</p>
+                </div>
+
+                <div class="sdk-selector-bar">
+                    <button class="sdk-tab-btn active" data-sdk="openai">OpenAI Vision</button>
+                    <button class="sdk-tab-btn" data-sdk="dalle">DALL-E 3</button>
+                    <button class="sdk-tab-btn" data-sdk="nanobanana">NanoBanana API</button>
+                    <button class="sdk-tab-btn" data-sdk="whisper">Whisper API</button>
+                    <button class="sdk-tab-btn" data-sdk="hf">Hugging Face</button>
+                    <button class="sdk-tab-btn" data-sdk="langchain">LangChain</button>
+                    <button class="sdk-tab-btn" data-sdk="llamaindex">LlamaIndex</button>
+                </div>
+
+                <div class="code-editor-box">
+                    <div class="editor-header">
+                        <span id="code-filename">01_openai_vision_api.py</span>
+                        <button class="run-code-btn" id="btn-run-code">▶️ Run Code</button>
+                    </div>
+                    <pre><code id="code-display"># Loading code snippet...</code></pre>
+                </div>
+
+                <div class="console-box" id="sdk-console">
+                    [Console Output] Klik 'Run Code' untuk mengeksekusi skrip SDK di atas.
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>

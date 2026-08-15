@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vector Databases Visualizer & Interactive Playground</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="background-globes">
+        <div class="globe globe-1"></div>
+        <div class="globe globe-2"></div>
+        <div class="globe globe-3"></div>
+    </div>
+
+    <header class="app-header">
+        <div class="header-container">
+            <div class="logo">
+                <span class="logo-icon">🌲</span>
+                <div>
+                    <h1>Vector Databases Studio</h1>
+                    <p class="subtitle">AI Engineer Roadmap (roadmap.sh/ai-engineer)</p>
+                </div>
+            </div>
+            <nav class="nav-tabs">
+                <button class="tab-btn active" data-tab="overview">🎯 Core Concept</button>
+                <button class="tab-btn" data-tab="dbs-explorer">📦 Popular Vector DBs</button>
+                <button class="tab-btn" data-tab="vector-space">🌌 2D Vector Playground</button>
+                <button class="tab-btn" data-tab="hnsw-visualizer">🕸️ HNSW & Indexing</button>
+            </nav>
+        </div>
+    </header>
+
+    <main class="main-container">
+        <!-- TAB 1: CORE CONCEPT & ROADMAP -->
+        <section id="tab-overview" class="tab-content active">
+            <div class="hero-card glass">
+                <div class="hero-badge">PETA KURIKULUM RESMI</div>
+                <h2>Vector Databases Architecture</h2>
+                <p>Memahami bagaimana Vector Database menyimpan embedding berdimensi tinggi, melakukan pencarian kemiripan semantik (ANN Search), serta mengelola filter metadata payload secara real-time.</p>
+                
+                <div class="roadmap-interactive-diagram">
+                    <div class="diagram-box yellow-glow" onclick="switchTab('overview')">
+                        <h3>Purpose and Functionality</h3>
+                        <p>High-Dimensional Storage, ANN vs k-NN, Distance Metrics (Cosine, Dot Product, L2), Payload Metadata Filtering</p>
+                    </div>
+                    <div class="diagram-arrow">↓</div>
+                    <div class="diagram-section-header">Popular Vector DBs (pick one)</div>
+                    <div class="diagram-grid">
+                        <div class="db-chip" onclick="selectDB('chroma')">Chroma</div>
+                        <div class="db-chip highlighted-db" onclick="selectDB('pinecone')">Pinecone ⭐</div>
+                        <div class="db-chip" onclick="selectDB('weaviate')">Weaviate</div>
+                        <div class="db-chip" onclick="selectDB('faiss')">FAISS</div>
+                        <div class="db-chip" onclick="selectDB('lancedb')">LanceDB</div>
+                        <div class="db-chip" onclick="selectDB('qdrant')">Qdrant</div>
+                        <div class="db-chip full-width" onclick="selectDB('supabase')">Supabase (pgvector)</div>
+                        <div class="db-chip full-width" onclick="selectDB('mongodb')">MongoDB Atlas Vector Search</div>
+                    </div>
+                    <div class="diagram-arrow">↓</div>
+                    <div class="diagram-box green-glow">
+                        <h3>Implementing Vector Search</h3>
+                        <div class="sub-box-row">
+                            <span class="sub-chip">Indexing Embeddings (HNSW, IVF, PQ)</span>
+                            <span class="sub-chip">Performing Similarity Search (k-NN, Hybrid)</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- TAB 2: POPULAR VECTOR DBS EXPLORER -->
+        <section id="tab-dbs-explorer" class="tab-content">
+            <div class="section-title">
+                <h2>Popular Vector Databases Explorer</h2>
+                <p>Pilih Vector Database untuk melihat karakteristik, contoh kode Python, dan kasus penggunaan ideal.</p>
+            </div>
+
+            <div class="db-selector-bar">
+                <button class="db-select-btn active" data-db="pinecone">🌲 Pinecone (Featured)</button>
+                <button class="db-select-btn" data-db="chroma">📦 Chroma DB</button>
+                <button class="db-select-btn" data-db="faiss">⚡ FAISS</button>
+                <button class="db-select-btn" data-db="qdrant">🦀 Qdrant</button>
+                <button class="db-select-btn" data-db="lancedb">🗡️ LanceDB</button>
+                <button class="db-select-btn" data-db="supabase">⚡ Supabase pgvector</button>
+            </div>
+
+            <div id="db-details-card" class="card glass">
+                <!-- Dynamically Populated by JS -->
+            </div>
+        </section>
+
+        <!-- TAB 3: 2D VECTOR SPACE PLAYGROUND -->
+        <section id="tab-vector-space" class="tab-content">
+            <div class="grid-2col">
+                <div class="card glass">
+                    <h3>🌌 Interactive Vector Space (2D Canvas)</h3>
+                    <p>Klik pada area canvas untuk menambahkan titik vektor data atau seret titik Query untuk melihat tetangga terdekat (Top-K) secara real-time.</p>
+                    <canvas id="vectorCanvas" width="600" height="400"></canvas>
+                    <div class="canvas-legend">
+                        <span class="legend-item"><span class="color-dot query"></span> Query Vector</span>
+                        <span class="legend-item"><span class="color-dot match"></span> Top-K Match</span>
+                        <span class="legend-item"><span class="color-dot normal"></span> Database Vectors</span>
+                    </div>
+                </div>
+
+                <div class="card glass">
+                    <h3>⚙️ Similarity Query Controls</h3>
+                    <div class="form-group">
+                        <label>Distance Metric:</label>
+                        <select id="metricSelect" class="input-control">
+                            <option value="cosine">Cosine Similarity</option>
+                            <option value="l2">Euclidean (L2) Distance</option>
+                            <option value="dot">Dot Product</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Top-K Neighbors: <span id="topkVal">3</span></label>
+                        <input type="range" id="topkRange" min="1" max="10" value="3" class="slider-control">
+                    </div>
+
+                    <div class="form-group">
+                        <label>Filter Metadata Category:</label>
+                        <select id="categoryFilter" class="input-control">
+                            <option value="all">Semua Kategori (No Filter)</option>
+                            <option value="AI">AI & ML</option>
+                            <option value="Tech">Software Tech</option>
+                            <option value="Food">Kuliner</option>
+                        </select>
+                    </div>
+
+                    <button id="addRandomBtn" class="btn primary-btn">+ Tambah 5 Vektor Acak</button>
+                    <button id="resetCanvasBtn" class="btn secondary-btn">🔄 Reset Canvas</button>
+
+                    <div class="results-panel">
+                        <h4>Top-K Nearest Neighbors Results:</h4>
+                        <div id="resultsList" class="results-list"></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- TAB 4: HNSW INDEX & SEARCH VISUALIZER -->
+        <section id="tab-hnsw-visualizer" class="tab-content">
+            <div class="card glass">
+                <h2>🕸️ HNSW (Hierarchical Navigable Small World) Graph Simulator</h2>
+                <p>Visualisasi bagaimana pencarian ANN menggunakan grafik multi-layer bergerak dari highway layer (atas) ke local density layer (bawah).</p>
+
+                <div class="hnsw-diagram">
+                    <div class="hnsw-layer layer-top">
+                        <span class="layer-tag">Layer 2 (Highway Graph - Sparse)</span>
+                        <div class="layer-nodes">
+                            <div class="node active">A</div>
+                            <div class="line"></div>
+                            <div class="node">F</div>
+                        </div>
+                    </div>
+                    <div class="hnsw-layer layer-mid">
+                        <span class="layer-tag">Layer 1 (Medium Connections)</span>
+                        <div class="layer-nodes">
+                            <div class="node active">A</div>
+                            <div class="node active">B</div>
+                            <div class="node">D</div>
+                            <div class="node">F</div>
+                        </div>
+                    </div>
+                    <div class="hnsw-layer layer-bot">
+                        <span class="layer-tag">Layer 0 (Dense Base Layer - All Vectors)</span>
+                        <div class="layer-nodes">
+                            <div class="node active">A</div>
+                            <div class="node active">B</div>
+                            <div class="node target">C (Target)</div>
+                            <div class="node">D</div>
+                            <div class="node">E</div>
+                            <div class="node">F</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="hnsw-metrics-box">
+                    <div class="metric-card">
+                        <span class="metric-title">Recall vs Latency</span>
+                        <span class="metric-value">99.4% Recall</span>
+                        <span class="metric-sub">sub-10ms query time</span>
+                    </div>
+                    <div class="metric-card">
+                        <span class="metric-title">Index Complexity</span>
+                        <span class="metric-value">O(log N)</span>
+                        <span class="metric-sub">dibanding Linear O(N)</span>
+                    </div>
+                    <div class="metric-card">
+                        <span class="metric-title">Memory Footprint</span>
+                        <span class="metric-value">High RAM</span>
+                        <span class="metric-sub">butuh PQ untuk kompresi</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="app-footer">
+        <p>Built with ❤️ for AI Engineers | Based on roadmap.sh/ai-engineer</p>
+    </footer>
+
+    <script src="app.js"></script>
+</body>
+</html>

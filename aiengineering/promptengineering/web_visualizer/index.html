@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Prompt Engineering Studio & Interactive Roadmap</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;600;700;800&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body class="dark-theme">
+    <!-- Header / Navigation -->
+    <header class="navbar">
+        <div class="logo-container">
+            <div class="logo-icon"><i class="fa-solid fa-wand-magic-sparkles"></i></div>
+            <div class="logo-text">
+                <span class="brand-title">Prompt Engineering</span>
+                <span class="brand-badge">ROADMAP.SH STUDIO</span>
+            </div>
+        </div>
+        <nav class="nav-tabs">
+            <button class="tab-btn active" data-tab="tab-roadmap"><i class="fa-solid fa-sitemap"></i> Interactive Roadmap</button>
+            <button class="tab-btn" data-tab="tab-playground"><i class="fa-solid fa-sliders"></i> LLM Configuration Sandbox</button>
+            <button class="tab-btn" data-tab="tab-tot"><i class="fa-solid fa-network-wired"></i> Tree of Thoughts Visualizer</button>
+            <button class="tab-btn" data-tab="tab-redteam"><i class="fa-solid fa-shield-halved"></i> AI Red Teaming Lab</button>
+            <button class="tab-btn" data-tab="tab-auditor"><i class="fa-solid fa-list-check"></i> Best Practices Auditor</button>
+        </nav>
+    </header>
+
+    <!-- Main Workspace Container -->
+    <main class="main-container">
+        
+        <!-- Tab 1: Interactive Roadmap -->
+        <section id="tab-roadmap" class="tab-content active">
+            <div class="section-header">
+                <h2><i class="fa-solid fa-map-location-dot"></i> Visual Roadmap Nodes</h2>
+                <p>Klik pada node peta jalan di bawah ini untuk melihat dokumentasi mendalam, penjelasan teknis, dan contoh prompt.</p>
+            </div>
+            
+            <div class="roadmap-canvas">
+                <div class="roadmap-grid">
+                    <!-- Column 1: Introduction & Common Terminology -->
+                    <div class="roadmap-col">
+                        <div class="category-card" data-category="intro">
+                            <div class="category-header">Introduction</div>
+                            <div class="node-item yellow-node" onclick="openNodeModal('llm-works')">LLMs and how they work?</div>
+                            <div class="node-item yellow-node" onclick="openNodeModal('what-is-prompt')">What is a Prompt?</div>
+                            <div class="node-item yellow-node" onclick="openNodeModal('what-is-pe')">What is Prompt Engineering?</div>
+                        </div>
+
+                        <div class="category-card" data-category="terminology">
+                            <div class="category-header">Common Terminology</div>
+                            <div class="node-grid-2">
+                                <div class="node-item beige-node" onclick="openNodeModal('term-llm')">LLM</div>
+                                <div class="node-item beige-node" onclick="openNodeModal('term-tokens')">Tokens</div>
+                            </div>
+                            <div class="node-item beige-node" onclick="openNodeModal('term-context')">Context Window</div>
+                            <div class="node-grid-2">
+                                <div class="node-item beige-node" onclick="openNodeModal('term-hallucination')">Hallucination</div>
+                                <div class="node-item beige-node" onclick="openNodeModal('term-agents')">Agents</div>
+                            </div>
+                            <div class="node-item beige-node" onclick="openNodeModal('term-injection')">Prompt Injection</div>
+                            <div class="node-item beige-node" onclick="openNodeModal('term-weights')">Model Weights / Parameters</div>
+                            <div class="node-item beige-node" onclick="openNodeModal('term-finetuning')">Fine-Tuning vs Prompt Engg.</div>
+                            <div class="node-grid-2">
+                                <div class="node-item beige-node" onclick="openNodeModal('term-agi')">AI vs AGI</div>
+                                <div class="node-item beige-node" onclick="openNodeModal('term-rag')">RAG</div>
+                            </div>
+                        </div>
+
+                        <div class="category-card" data-category="providers">
+                            <div class="category-header">Models offered by ___</div>
+                            <div class="node-grid-2">
+                                <div class="node-item provider-node" onclick="openNodeModal('prov-openai')">OpenAI</div>
+                                <div class="node-item provider-node" onclick="openNodeModal('prov-google')">Google</div>
+                            </div>
+                            <div class="node-grid-2">
+                                <div class="node-item provider-node" onclick="openNodeModal('prov-anthropic')">Anthropic</div>
+                                <div class="node-item provider-node" onclick="openNodeModal('prov-meta')">Meta</div>
+                            </div>
+                            <div class="node-item provider-node" onclick="openNodeModal('prov-xai')">xAI</div>
+                        </div>
+                    </div>
+
+                    <!-- Column 2: LLM Configuration & Prompting Techniques -->
+                    <div class="roadmap-col">
+                        <div class="category-card" data-category="config">
+                            <div class="category-header">LLM Configuration</div>
+                            <div class="subcategory-title"><i class="fa-solid fa-gauge-high"></i> Sampling Parameters</div>
+                            <div class="node-item yellow-node" onclick="openNodeModal('cfg-temp')">Temperature</div>
+                            <div class="node-grid-2">
+                                <div class="node-item beige-node" onclick="openNodeModal('cfg-topk')">Top-K</div>
+                                <div class="node-item beige-node" onclick="openNodeModal('cfg-topp')">Top-P</div>
+                            </div>
+                            <div class="subcategory-title"><i class="fa-solid fa-sliders"></i> Output Control</div>
+                            <div class="node-item beige-node" onclick="openNodeModal('cfg-maxtokens')">Max Tokens</div>
+                            <div class="node-item beige-node" onclick="openNodeModal('cfg-stop')">Stop Sequences</div>
+                            <div class="subcategory-title"><i class="fa-solid fa-repeat"></i> Repetition Penalties</div>
+                            <div class="node-item yellow-node" onclick="openNodeModal('cfg-penalties')">Frequency Penalty & Presence Penalty</div>
+                        </div>
+
+                        <div class="category-card" data-category="techniques">
+                            <div class="category-header">Prompting Techniques</div>
+                            <div class="node-item beige-node" onclick="openNodeModal('tech-zero')">Zero-Shot Prompting</div>
+                            <div class="node-item beige-node" onclick="openNodeModal('tech-few')">One-Shot / Few-Shot Prompting</div>
+                            <div class="nested-box">
+                                <div class="nested-title">System / Role / Contextual</div>
+                                <div class="node-item beige-node" onclick="openNodeModal('tech-sys')">System Prompting</div>
+                                <div class="node-item beige-node" onclick="openNodeModal('tech-role')">Role Prompting</div>
+                                <div class="node-item beige-node" onclick="openNodeModal('tech-context')">Contextual Prompting</div>
+                            </div>
+                            <div class="node-item beige-node" onclick="openNodeModal('tech-stepback')">Step-back Prompting</div>
+                            <div class="node-item beige-node" onclick="openNodeModal('tech-cot')">Chain of Thought (CoT) Prompting</div>
+                            <div class="node-item beige-node" onclick="openNodeModal('tech-self')">Self-Consistency Prompting</div>
+                            <div class="node-item beige-node" onclick="openNodeModal('tech-tot')">Tree of Thoughts (ToT) Prompting</div>
+                            <div class="node-item beige-node" onclick="openNodeModal('tech-react')">ReAct Prompting</div>
+                            <div class="node-item beige-node" onclick="openNodeModal('tech-tuning')">Prompt Tuning</div>
+                        </div>
+                    </div>
+
+                    <!-- Column 3: Structured Outputs, Best Practices & Reliability -->
+                    <div class="roadmap-col">
+                        <div class="category-card" data-category="structured">
+                            <div class="category-header">Structured Outputs & Auto Prompts</div>
+                            <div class="node-item yellow-node" onclick="openNodeModal('out-structured')">Structured Outputs (JSON, XML, CSV)</div>
+                            <div class="node-item yellow-node" onclick="openNodeModal('out-ape')">Automatic Prompt Engineering (APE)</div>
+                            <div class="node-item yellow-node" onclick="openNodeModal('out-redteam')">AI Red Teaming</div>
+                        </div>
+
+                        <div class="category-card" data-category="bestpractices">
+                            <div class="category-header">Prompting Best Practices</div>
+                            <div class="bp-list-preview">
+                                <div><i class="fa-solid fa-circle-check text-accent"></i> Few-shot examples for structure</div>
+                                <div><i class="fa-solid fa-circle-check text-accent"></i> Concise & short prompts</div>
+                                <div><i class="fa-solid fa-circle-check text-accent"></i> Use variables {{placeholders}}</div>
+                                <div><i class="fa-solid fa-circle-check text-accent"></i> Clearer instructions over constraints</div>
+                                <div><i class="fa-solid fa-circle-check text-accent"></i> Delimiters (``` or XML tags)</div>
+                            </div>
+                            <button class="btn-primary w-full mt-2" onclick="openNodeModal('best-practices-all')"><i class="fa-solid fa-book-open"></i> Read All 14 Best Practices</button>
+                        </div>
+
+                        <div class="category-card" data-category="reliability">
+                            <div class="category-header">Improving Reliability</div>
+                            <div class="node-item beige-node" onclick="openNodeModal('rel-debiasing')">Prompt Debiasing</div>
+                            <div class="node-item beige-node" onclick="openNodeModal('rel-ensembling')">Prompt Ensembling</div>
+                            <div class="node-item beige-node" onclick="openNodeModal('rel-selfeval')">LLM Self Evaluation</div>
+                            <div class="node-item beige-node" onclick="openNodeModal('rel-calibration')">Calibrating LLMs</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Tab 2: LLM Configuration Sandbox -->
+        <section id="tab-playground" class="tab-content">
+            <div class="sandbox-container">
+                <div class="controls-panel">
+                    <h3><i class="fa-solid fa-sliders"></i> Hyperparameter Controls</h3>
+                    
+                    <div class="control-group">
+                        <label>Temperature (<span id="temp-val">0.7</span>)</label>
+                        <input type="range" id="input-temp" min="0.0" max="2.0" step="0.1" value="0.7">
+                        <span class="control-hint">0.0 = Deterministic, 2.0 = High Randomness</span>
+                    </div>
+
+                    <div class="control-group">
+                        <label>Top-P / Nucleus (<span id="topp-val">0.9</span>)</label>
+                        <input type="range" id="input-topp" min="0.05" max="1.0" step="0.05" value="0.9">
+                    </div>
+
+                    <div class="control-group">
+                        <label>Max Tokens (<span id="maxtokens-val">256</span>)</label>
+                        <input type="range" id="input-maxtokens" min="32" max="2048" step="32" value="256">
+                    </div>
+
+                    <div class="control-group">
+                        <label>Frequency Penalty (<span id="freqpen-val">0.0</span>)</label>
+                        <input type="range" id="input-freqpen" min="-2.0" max="2.0" step="0.1" value="0.0">
+                    </div>
+
+                    <div class="control-group">
+                        <label>Presence Penalty (<span id="prespen-val">0.0</span>)</label>
+                        <input type="range" id="input-prespen" min="-2.0" max="2.0" step="0.1" value="0.0">
+                    </div>
+                </div>
+
+                <div class="playground-editor">
+                    <div class="editor-header">
+                        <span><i class="fa-solid fa-terminal"></i> Live Prompt Simulator</span>
+                        <div class="token-badge">Estimated Tokens: <span id="token-counter">0</span></div>
+                    </div>
+                    <textarea id="prompt-input" placeholder="Tuliskan prompt Anda di sini... (Contoh: Berikan 3 ide nama brand kopi kekinian beserta alasannya)"></textarea>
+                    
+                    <div class="editor-actions">
+                        <button id="btn-run-sim" class="btn-primary"><i class="fa-solid fa-play"></i> Generate Response</button>
+                        <button id="btn-clear-sim" class="btn-secondary"><i class="fa-solid fa-rotate-left"></i> Reset</button>
+                    </div>
+
+                    <div class="response-box">
+                        <div class="response-header">Output Generation Result</div>
+                        <pre id="sim-output">Klik 'Generate Response' untuk melihat simulasi hasil respons berdasarkan parameter yang Anda setel.</pre>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Tab 3: Tree of Thoughts Visualizer -->
+        <section id="tab-tot" class="tab-content">
+            <div class="tot-container">
+                <div class="section-header">
+                    <h2><i class="fa-solid fa-network-wired"></i> Tree of Thoughts (ToT) Explorer</h2>
+                    <p>Visualisasi cabang penalaran ganda dan evaluasi skor heuristik untuk masalah logika kompleks.</p>
+                </div>
+                
+                <div class="tot-grid">
+                    <div class="tot-branch-card optimal">
+                        <div class="branch-badge">Cabang A - Score 9.4 (Optimal)</div>
+                        <h4>Dynamic Programming Strategy</h4>
+                        <p>Memecah masalah menjadi sub-problem terkecil, menyimpannya di memori memoization.</p>
+                        <div class="branch-status"><i class="fa-solid fa-check-circle"></i> Terpilih sebagai Jawaban Akhir</div>
+                    </div>
+
+                    <div class="tot-branch-card rejected">
+                        <div class="branch-badge">Cabang B - Score 4.1 (Pruned)</div>
+                        <h4>Brute Force Permutation</h4>
+                        <p>Mengiterasi seluruh variasi tanpa batas. Membutuhkan kompleksitas waktu O(N!).</p>
+                        <div class="branch-status"><i class="fa-solid fa-xmark-circle"></i> Dipotong (Pruned) di Kedalaman 2</div>
+                    </div>
+
+                    <div class="tot-branch-card backup">
+                        <div class="branch-badge">Cabang C - Score 7.2 (Backup)</div>
+                        <h4>Greedy Heuristic</h4>
+                        <p>Mengambil keputusan terbaik lokal di setiap langkah tanpa jaminan optimalitas global.</p>
+                        <div class="branch-status"><i class="fa-solid fa-info-circle"></i> Cabang Cadangan</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Tab 4: AI Red Teaming Lab -->
+        <section id="tab-redteam" class="tab-content">
+            <div class="redteam-container">
+                <div class="section-header">
+                    <h2><i class="fa-solid fa-shield-halved"></i> AI Red Teaming & Injection Defense Sandbox</h2>
+                    <p>Uji ketahanan model terhadap serangan Prompt Injection & Jailbreaking secara real-time.</p>
+                </div>
+
+                <div class="redteam-grid">
+                    <div class="attack-presets">
+                        <h3>Pilih Vektor Serangan</h3>
+                        <button class="btn-preset" onclick="loadAttackPreset(1)">Direct System Overriding</button>
+                        <button class="btn-preset" onclick="loadAttackPreset(2)">Jailbreak Persona Attack (DAN)</button>
+                        <button class="btn-preset" onclick="loadAttackPreset(3)">Prompt Leaking Extraction</button>
+                    </div>
+
+                    <div class="defense-sandbox">
+                        <textarea id="attack-input" placeholder="Masukkan teks uji coba serangan di sini..."></textarea>
+                        <div class="defense-toggles">
+                            <label><input type="checkbox" id="chk-sanitize" checked> Aktifkan Input Sanitizer Filter</label>
+                            <label><input type="checkbox" id="chk-xml" checked> Aktifkan Strict XML Delimiter Isolation</label>
+                        </div>
+                        <button class="btn-primary" onclick="testRedTeaming()"><i class="fa-solid fa-shield-virus"></i> Test Security Defense</button>
+                        <div id="redteam-result" class="security-result-box">Hasil evaluasi keamanan akan muncul di sini.</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Tab 5: Best Practices Auditor -->
+        <section id="tab-auditor" class="tab-content">
+            <div class="auditor-container">
+                <div class="section-header">
+                    <h2><i class="fa-solid fa-list-check"></i> Automated 14 Best Practices Auditor</h2>
+                    <p>Tempelkan prompt Anda di bawah untuk menguji tingkat kepatuhannya terhadap 14 Aturan Emas roadmap.sh.</p>
+                </div>
+
+                <div class="auditor-grid">
+                    <textarea id="audit-input" placeholder="Tempelkan prompt produksi Anda di sini untuk diaudit..."></textarea>
+                    <button class="btn-primary" onclick="runPromptAudit()"><i class="fa-solid fa-magnifying-glass"></i> Audit Prompt Now</button>
+                    
+                    <div id="audit-results" class="audit-card-results">
+                        <div class="audit-score">Skor Kepatuhan: <span id="audit-score-num">0/5</span></div>
+                        <div id="audit-checks-list"></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Modal System for Node Details -->
+    <div id="node-modal" class="modal-overlay">
+        <div class="modal-card">
+            <div class="modal-header">
+                <h3 id="modal-title">Node Detail</h3>
+                <button class="close-modal" onclick="closeNodeModal()">&times;</button>
+            </div>
+            <div id="modal-body" class="modal-body">
+                Detail materi akan ditampilkan di sini.
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="js/roadmap_data.js"></script>
+    <script src="js/playground.js"></script>
+    <script src="js/app.js"></script>
+</body>
+</html>

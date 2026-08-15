@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Safety & Ethics Learning Visualizer</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="app-container">
+        <!-- Header Nav -->
+        <header class="app-header">
+            <div class="logo-area">
+                <div class="shield-icon">🛡️</div>
+                <div>
+                    <h1>AI Safety & Ethics</h1>
+                    <p class="subtitle">Interactive Learning Hub & Guardrails Simulator</p>
+                </div>
+            </div>
+            <nav class="nav-tabs">
+                <button class="nav-tab active" data-tab="diagram-tab">🗺️ Diagram & Architecture</button>
+                <button class="nav-tab" data-tab="injection-tab">⚡ Prompt Injection</button>
+                <button class="nav-tab" data-tab="moderation-tab">🔍 Moderation & PII</button>
+                <button class="nav-tab" data-tab="redteam-tab">🔴 Red Teaming</button>
+                <button class="nav-tab" data-tab="guardrails-tab">📐 Input & Output Constraints</button>
+            </nav>
+        </header>
+
+        <!-- Main Content Area -->
+        <main class="content-area">
+            <!-- TAB 1: Diagram & Mindmap -->
+            <section id="diagram-tab" class="tab-pane active">
+                <div class="panel-header">
+                    <h2>AI Safety & Ethics Curriculum Diagram</h2>
+                    <p>Click on any node to view detailed concepts, threat vectors, and defense strategies.</p>
+                </div>
+                
+                <div class="diagram-wrapper">
+                    <!-- Top Box: Understanding AI Safety Issues -->
+                    <div class="diagram-box issues-box">
+                        <div class="diagram-items">
+                            <div class="node-card danger-node" data-node="injection">
+                                <span class="node-badge">Attack Vector</span>
+                                <h3>Prompt Injection Attacks</h3>
+                                <p>Direct & Indirect injections, Jailbreaking, System Prompt leaks.</p>
+                            </div>
+                            <div class="node-card danger-node" data-node="security">
+                                <span class="node-badge">Security Risk</span>
+                                <h3>Security and Privacy Concerns</h3>
+                                <p>PII leakage, Data privacy, Insecure output handling, DLP.</p>
+                            </div>
+                            <div class="node-card danger-node" data-node="bias">
+                                <span class="node-badge">Ethical Risk</span>
+                                <h3>Bias and Fairness</h3>
+                                <p>Algorithmic bias, Stereotyping, Disparate impact auditing.</p>
+                            </div>
+                        </div>
+                        <div class="box-label">Understanding AI Safety Issues</div>
+                    </div>
+
+                    <div class="diagram-connector">
+                        <div class="connector-line"></div>
+                        <div class="connector-badge">DEFENSE-IN-DEPTH ALIGNMENT</div>
+                        <div class="connector-line"></div>
+                    </div>
+
+                    <!-- Bottom Box: Safety Best Practices -->
+                    <div class="diagram-box practices-box">
+                        <div class="diagram-items grid-2col">
+                            <div class="node-card safe-node" data-node="moderation">
+                                <span class="node-badge defense">Pre & Post Filter</span>
+                                <h3>Content Moderation APIs</h3>
+                                <p>Automated toxicity classifiers & category thresholds.</p>
+                            </div>
+                            <div class="node-card safe-node highlight-yellow" data-node="userid">
+                                <span class="node-badge defense">Session Security</span>
+                                <h3>Adding end-user IDs in prompts</h3>
+                                <p>Per-user tracking, Rate limiting, Abuse detection.</p>
+                            </div>
+                            <div class="node-card safe-node" data-node="adversarial">
+                                <span class="node-badge defense">Proactive Audit</span>
+                                <h3>Conducting adversarial testing</h3>
+                                <p>Red-teaming suites, Automated jailbreak fuzzing.</p>
+                            </div>
+                            <div class="node-card safe-node" data-node="robustprompt">
+                                <span class="node-badge defense">Defensive Prompting</span>
+                                <h3>Robust prompt engineering</h3>
+                                <p>XML tag boundaries, System prompt hardening.</p>
+                            </div>
+                            <div class="node-card safe-node" data-node="kyc">
+                                <span class="node-badge defense">Governance</span>
+                                <h3>Know your Customers / Usecases</h3>
+                                <p>Domain scoping, Risk tiering, Human-in-the-loop.</p>
+                            </div>
+                            <div class="node-card safe-node" data-node="constraints">
+                                <span class="node-badge defense">Structural Filter</span>
+                                <h3>Constraining outputs and inputs</h3>
+                                <p>Input caps, Pydantic JSON schema validation.</p>
+                            </div>
+                        </div>
+                        <div class="box-label">Safety Best Practices</div>
+                    </div>
+                </div>
+
+                <!-- Inspector Modal / Details -->
+                <div id="node-details" class="inspector-card">
+                    <h3 id="inspector-title">Select a topic node above to inspect details</h3>
+                    <div id="inspector-body" class="inspector-content">
+                        <p class="placeholder-text">Click any of the nodes above to see comprehensive concept notes, technical specifications, and recommended defense patterns.</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- TAB 2: Prompt Injection Simulator -->
+            <section id="injection-tab" class="tab-pane">
+                <div class="panel-header">
+                    <h2>Prompt Injection & Defense Playground</h2>
+                    <p>Test adversarial prompts against naive vs defended system instructions in real-time.</p>
+                </div>
+                <div class="playground-grid">
+                    <div class="control-box">
+                        <label for="sample-attack-select">Preset Attack Payloads:</label>
+                        <select id="sample-attack-select" class="form-select">
+                            <option value="custom">-- Custom Prompt --</option>
+                            <option value="jailbreak">Direct Injection: DAN Mode Override</option>
+                            <option value="leak">System Leak: Disclose System Directive</option>
+                            <option value="indirect">Indirect Injection: Malicious Data Tag</option>
+                        </select>
+
+                        <label for="attack-input">Prompt Input:</label>
+                        <textarea id="attack-input" class="form-textarea" rows="5" placeholder="Type prompt injection attack payload here..."></textarea>
+                        
+                        <button id="btn-run-injection" class="btn-primary">⚡ Test Prompt Attack</button>
+                    </div>
+
+                    <div class="results-box">
+                        <div class="result-card naive-result">
+                            <div class="result-header">
+                                <span class="badge badge-vulnerable">Naive Model (No Defense)</span>
+                            </div>
+                            <pre id="naive-output" class="code-block">Run test to see result...</pre>
+                        </div>
+                        
+                        <div class="result-card defended-result">
+                            <div class="result-header">
+                                <span class="badge badge-defended">Defended Model (XML Sandboxed)</span>
+                            </div>
+                            <pre id="defended-output" class="code-block">Run test to see result...</pre>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- TAB 3: Moderation & PII -->
+            <section id="moderation-tab" class="tab-pane">
+                <div class="panel-header">
+                    <h2>Content Moderation & PII Sanitizer Playground</h2>
+                    <p>Analyze text for PII leakage, toxicity categories, and security compliance.</p>
+                </div>
+                <div class="playground-grid">
+                    <div class="control-box">
+                        <label for="moderation-input">Input Text:</label>
+                        <textarea id="moderation-input" class="form-textarea" rows="6">Contact Alice at alice@company.com or 555-019-2834. Also check password override script: <script>alert("hack");</script></textarea>
+                        
+                        <button id="btn-run-moderation" class="btn-primary">🔍 Inspect & Sanitize Text</button>
+                    </div>
+
+                    <div class="results-box">
+                        <div class="result-card">
+                            <h3>PII Masking & Sanitization Result</h3>
+                            <pre id="pii-output" class="code-block">Awaiting input analysis...</pre>
+                        </div>
+                        <div class="result-card">
+                            <h3>Moderation API Category Scores</h3>
+                            <div id="mod-scores-container" class="scores-list">
+                                <p class="placeholder-text">Category scores will appear here...</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- TAB 4: Red Teaming -->
+            <section id="redteam-tab" class="tab-pane">
+                <div class="panel-header">
+                    <h2>Automated Red-Teaming & Jailbreak Audit Suite</h2>
+                    <p>Simulate security vulnerability scans against different LLM deployment targets.</p>
+                </div>
+                <div class="redteam-controls">
+                    <label for="target-model-select">Target Model Architecture:</label>
+                    <select id="target-model-select" class="form-select">
+                        <option value="naive">Naive System (No Input Filtering or Sandboxing)</option>
+                        <option value="partial">Partially Guarded System (Basic Keyword Filter)</option>
+                        <option value="defended" selected>Fully Hardened System (XML Isolation + Moderation + Guardrails)</option>
+                    </select>
+                    <button id="btn-run-redteam" class="btn-danger">🔴 Run Red-Team Vulnerability Scan</button>
+                </div>
+
+                <div id="redteam-report" class="report-box">
+                    <div class="placeholder-text">Click "Run Red-Team Vulnerability Scan" to begin audit...</div>
+                </div>
+            </section>
+
+            <!-- TAB 5: Input & Output Constraints -->
+            <section id="guardrails-tab" class="tab-pane">
+                <div class="panel-header">
+                    <h2>Input & Output Constraints Playground</h2>
+                    <p>Test input length validation and Pydantic JSON Schema enforcement.</p>
+                </div>
+                <div class="playground-grid">
+                    <div class="control-box">
+                        <h3>1. Input Length Caps</h3>
+                        <label for="length-input">Input String:</label>
+                        <textarea id="length-input" class="form-textarea" rows="3" placeholder="Enter text to test character limits..."></textarea>
+                        <button id="btn-check-length" class="btn-secondary">Check Input Caps</button>
+                        <div id="length-result" class="status-box"></div>
+                    </div>
+
+                    <div class="control-box">
+                        <h3>2. Pydantic Structured Output Validation</h3>
+                        <label for="schema-json-input">LLM JSON Output Payload:</label>
+                        <textarea id="schema-json-input" class="form-textarea" rows="5">{
+  "risk_score": 0.25,
+  "detected_vulnerabilities": ["Minor PII"],
+  "is_approved_for_deployment": true,
+  "remediation_steps": "Apply email masking filter."
+}</textarea>
+                        <button id="btn-check-schema" class="btn-primary">Validate JSON Schema</button>
+                        <div id="schema-result" class="status-box"></div>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>

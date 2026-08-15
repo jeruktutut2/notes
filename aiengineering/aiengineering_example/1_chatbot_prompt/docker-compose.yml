@@ -1,0 +1,31 @@
+version: '3.8'
+
+services:
+  # Service 1: Ollama Server (Menjalankan model AI LLM)
+  ollama:
+    image: ollama/ollama:latest
+    container_name: ollama_service
+    ports:
+      - "11434:11434"
+    volumes:
+      - ollama_data:/root/.ollama
+    restart: always
+
+  # Service 2: Aplikasi Chatbot Terminal Python
+  chatbot:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: chatbot_terminal
+    environment:
+      - OLLAMA_URL=http://ollama:11434/api/chat
+      - MODEL=gemma3:4b
+    # Konfigurasi agar terminal interaktif (bisa terima input user)
+    stdin_open: true
+    tty: true
+    depends_on:
+      - ollama
+
+volumes:
+  ollama_data:
+    driver: local

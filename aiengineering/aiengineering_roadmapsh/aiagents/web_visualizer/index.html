@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AI Agents Interactive Learning Lab | roadmap.sh</title>
+  <!-- Google Fonts & FontAwesome Icons -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Fira+Code:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="app-container">
+    <!-- Header -->
+    <header class="navbar">
+      <div class="logo-area">
+        <div class="logo-icon"><i class="fa-solid fa-robot"></i></div>
+        <div>
+          <h1>AI Agents Masterclass</h1>
+          <span class="subtitle">roadmap.sh/ai-engineer • Interactive Learning Playground</span>
+        </div>
+      </div>
+      <nav class="nav-tabs">
+        <button class="tab-btn active" data-tab="roadmap"><i class="fa-solid fa-sitemap"></i> Roadmap Diagram</button>
+        <button class="tab-btn" data-tab="react"><i class="fa-solid fa-brain"></i> ReAct Simulator</button>
+        <button class="tab-btn" data-tab="multiagent"><i class="fa-solid fa-network-wired"></i> Multi-Agent Topology</button>
+        <button class="tab-btn" data-tab="tools"><i class="fa-solid fa-wrench"></i> Tool Calling Inspector</button>
+        <button class="tab-btn" data-tab="frameworks"><i class="fa-solid fa-cubes"></i> Building Frameworks</button>
+      </nav>
+    </header>
+
+    <!-- Main Content Area -->
+    <main class="main-content">
+      <!-- TAB 1: ROADMAP DIAGRAM -->
+      <section id="tab-roadmap" class="tab-pane active">
+        <div class="pane-header">
+          <h2><i class="fa-solid fa-sitemap"></i> AI Agents Roadmap Architecture</h2>
+          <p>Visualisasi struktur kurikulum pembelajaran AI Agents sesuai roadmap.sh/ai-engineer.</p>
+        </div>
+
+        <div class="roadmap-grid">
+          <!-- Main Pillar Card -->
+          <div class="roadmap-pillar">
+            <div class="roadmap-card gold-glow" onclick="showTopicDetail('usecases')">
+              <div class="card-badge">Module 01</div>
+              <div class="card-icon"><i class="fa-solid fa-lightbulb"></i></div>
+              <h3>Agents Usecases</h3>
+              <p>Customer Support, Code Assistants, Data Analysis, Enterprise Workflows.</p>
+            </div>
+
+            <div class="roadmap-card gold-glow" onclick="showTopicDetail('react')">
+              <div class="card-badge">Module 02</div>
+              <div class="card-icon"><i class="fa-solid fa-rotate"></i></div>
+              <h3>ReAct Prompting</h3>
+              <p>Thought -> Action -> Observation reasoning loop architecture.</p>
+            </div>
+
+            <div class="roadmap-card gold-glow" onclick="showTopicDetail('tools')">
+              <div class="card-badge">Module 03</div>
+              <div class="card-icon"><i class="fa-solid fa-code"></i></div>
+              <h3>Tools & Function Calling</h3>
+              <p>JSON Schema definitions, tool registration, return handling.</p>
+            </div>
+
+            <div class="roadmap-card gold-glow highlight-border" onclick="showTopicDetail('multiagent')">
+              <div class="card-badge">Module 04</div>
+              <div class="card-icon"><i class="fa-solid fa-users-gear"></i></div>
+              <h3>Multi-agents</h3>
+              <p>Orchestrator-Workers, Sequential Pipelines, Peer Handoffs.</p>
+            </div>
+
+            <!-- Building AI Agents Sub-Container -->
+            <div class="building-agents-box">
+              <div class="box-title"><i class="fa-solid fa-screwdriver-wrench"></i> Building AI Agents</div>
+              <div class="sub-cards-list">
+                <div class="sub-card" onclick="showTopicDetail('manual')"><i class="fa-solid fa-code-commit"></i> Manual Implementation</div>
+                <div class="sub-card" onclick="showTopicDetail('openai')"><i class="fa-solid fa-bolt"></i> OpenAI AgentKit & Agent SDK</div>
+                <div class="sub-card" onclick="showTopicDetail('claude')"><i class="fa-solid fa-terminal"></i> Claude Agent SDK</div>
+                <div class="sub-card" onclick="showTopicDetail('vertex')"><i class="fa-solid fa-cloud"></i> Vertex AI Agent Builder</div>
+                <div class="sub-card" onclick="showTopicDetail('google')"><i class="fa-brands fa-google"></i> Google ADK</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Topic Info Panel -->
+          <div class="topic-detail-card" id="topic-detail-panel">
+            <div class="detail-header">
+              <h3 id="detail-title">Pilih Topik Roadmap</h3>
+              <span class="detail-tag" id="detail-tag">Info</span>
+            </div>
+            <div class="detail-body" id="detail-body">
+              <p>Klik salah satu blok di sebelah kiri untuk melihat ringkasan konseptual, contoh kode, dan kasus penggunaan praktis.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- TAB 2: REACT SIMULATOR -->
+      <section id="tab-react" class="tab-pane">
+        <div class="pane-header">
+          <h2><i class="fa-solid fa-brain"></i> Interactive ReAct Loop Simulator</h2>
+          <p>Uji coba alur ReAct (Reasoning and Acting) secara interaktif step-by-step.</p>
+        </div>
+
+        <div class="simulator-layout">
+          <div class="sim-controls glass-panel">
+            <h3>Input Skenario Agent</h3>
+            <div class="form-group">
+              <label for="query-preset">Pilih Contoh Task:</label>
+              <select id="query-preset" class="custom-select">
+                <option value="refund">Support: Refund Pesanan ORD-9901</option>
+                <option value="math">Math & Web: Hitung Luas Lingkaran r=7 x 3</option>
+                <option value="devops">DevOps: Cek Server Disk Space & CPU</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="custom-query">Teks Query Pertanyaan:</label>
+              <textarea id="custom-query" rows="3" class="custom-textarea"></textarea>
+            </div>
+            <div class="btn-group">
+              <button class="btn btn-primary" id="btn-run-react"><i class="fa-solid fa-play"></i> Run ReAct Simulation</button>
+              <button class="btn btn-secondary" id="btn-next-step" disabled><i class="fa-solid fa-forward-step"></i> Next Step</button>
+              <button class="btn btn-danger" id="btn-reset-react"><i class="fa-solid fa-rotate-left"></i> Reset</button>
+            </div>
+
+            <div class="available-tools-box">
+              <h4>Registered Tools</h4>
+              <ul>
+                <li><code>check_order_status(id)</code></li>
+                <li><code>process_refund(id)</code></li>
+                <li><code>calculate_math(expr)</code></li>
+                <li><code>execute_bash(command)</code></li>
+              </ul>
+            </div>
+          </div>
+
+          <div class="sim-output glass-panel">
+            <h3>Execution Trace Console</h3>
+            <div id="react-trace-list" class="trace-list">
+              <div class="empty-trace-state"><i class="fa-solid fa-terminal"></i> Klik 'Run ReAct Simulation' untuk memulai trace.</div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- TAB 3: MULTI-AGENT TOPOLOGY -->
+      <section id="tab-multiagent" class="tab-pane">
+        <div class="pane-header">
+          <h2><i class="fa-solid fa-network-wired"></i> Multi-Agent Topology Visualizer</h2>
+          <p>Eksplorasi interaksi antara agen-agen spesialis dalam topologi Multi-Agent System.</p>
+        </div>
+
+        <div class="topology-selector">
+          <button class="topo-btn active" data-topo="hierarchical"><i class="fa-solid fa-sitemap"></i> Orchestrator - Worker</button>
+          <button class="topo-btn" data-topo="sequential"><i class="fa-solid fa-arrow-right-long"></i> Sequential Pipeline</button>
+          <button class="topo-btn" data-topo="router"><i class="fa-solid fa-route"></i> Router / Dispatcher Agent</button>
+        </div>
+
+        <div class="topology-canvas glass-panel" id="topology-canvas">
+          <!-- Dynamic SVG / Node rendering via app.js -->
+        </div>
+      </section>
+
+      <!-- TAB 4: TOOL CALLING INSPECTOR -->
+      <section id="tab-tools" class="tab-pane">
+        <div class="pane-header">
+          <h2><i class="fa-solid fa-wrench"></i> Tools & Function Calling Inspector</h2>
+          <p>Pemeriksaan JSON Schema tool registration dan format tool_call payload.</p>
+        </div>
+
+        <div class="tools-inspector-grid">
+          <div class="inspector-card glass-panel">
+            <h3>1. Function Schema (Pydantic / JSON Schema)</h3>
+            <pre><code class="code-block" id="schema-code-preview"></code></pre>
+          </div>
+
+          <div class="inspector-card glass-panel">
+            <h3>2. LLM Tool Call Request Payload</h3>
+            <pre><code class="code-block" id="request-code-preview"></code></pre>
+          </div>
+
+          <div class="inspector-card glass-panel">
+            <h3>3. Tool Result Context Injection</h3>
+            <pre><code class="code-block" id="result-code-preview"></code></pre>
+          </div>
+        </div>
+      </section>
+
+      <!-- TAB 5: BUILDING FRAMEWORKS -->
+      <section id="tab-frameworks" class="tab-pane">
+        <div class="pane-header">
+          <h2><i class="fa-solid fa-cubes"></i> Building AI Agents Framework Comparison</h2>
+          <p>Perbandingan komprehensif antara Manual Implementation, OpenAI AgentKit, Claude SDK, Vertex AI, dan Google ADK.</p>
+        </div>
+
+        <div class="frameworks-matrix-grid">
+          <div class="framework-card glass-panel">
+            <div class="fw-header">
+              <i class="fa-solid fa-code-commit fw-icon"></i>
+              <h3>Manual Implementation</h3>
+            </div>
+            <ul class="fw-features">
+              <li><strong>Model:</strong> Any LLM via HTTP/REST</li>
+              <li><strong>Loop Control:</strong> Pure Python <code>while</code> loop</li>
+              <li><strong>State:</strong> Custom Memory Array</li>
+              <li><strong>Pros:</strong> Zero dependency, 100% control</li>
+            </ul>
+          </div>
+
+          <div class="framework-card glass-panel">
+            <div class="fw-header">
+              <i class="fa-solid fa-bolt fw-icon"></i>
+              <h3>OpenAI AgentKit & SDK</h3>
+            </div>
+            <ul class="fw-features">
+              <li><strong>Model:</strong> GPT-4o / O1 / O3-mini</li>
+              <li><strong>Loop Control:</strong> Assistant API / Swarm Handoff</li>
+              <li><strong>State:</strong> Managed Thread Store</li>
+              <li><strong>Pros:</strong> Swarm agent handoffs, fast prototyping</li>
+            </ul>
+          </div>
+
+          <div class="framework-card glass-panel">
+            <div class="fw-header">
+              <i class="fa-solid fa-terminal fw-icon"></i>
+              <h3>Claude Agent SDK</h3>
+            </div>
+            <ul class="fw-features">
+              <li><strong>Model:</strong> Claude 3.5 Sonnet / Opus</li>
+              <li><strong>Loop Control:</strong> <code>tool_use</code> & <code>tool_result</code> blocks</li>
+              <li><strong>State:</strong> In-Context Message List</li>
+              <li><strong>Pros:</strong> Computer Use, high accuracy reasoning</li>
+            </ul>
+          </div>
+
+          <div class="framework-card glass-panel">
+            <div class="fw-header">
+              <i class="fa-solid fa-cloud fw-icon"></i>
+              <h3>Vertex AI Agent Builder</h3>
+            </div>
+            <ul class="fw-features">
+              <li><strong>Model:</strong> Gemini / Enterprise RAG</li>
+              <li><strong>Loop Control:</strong> Low-code / Managed GCP</li>
+              <li><strong>State:</strong> GCP Enterprise Data Store</li>
+              <li><strong>Pros:</strong> Grounded Search, zero hallucination</li>
+            </ul>
+          </div>
+
+          <div class="framework-card glass-panel">
+            <div class="fw-header">
+              <i class="fa-brands fa-google fw-icon"></i>
+              <h3>Google ADK (Agent Dev Kit)</h3>
+            </div>
+            <ul class="fw-features">
+              <li><strong>Model:</strong> Gemini 1.5 Pro / 2.0 Flash</li>
+              <li><strong>Loop Control:</strong> ADK Native Toolkit</li>
+              <li><strong>State:</strong> Multimodal Context Window</li>
+              <li><strong>Pros:</strong> Multimodal inputs (Image/Video/Audio)</li>
+            </ul>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+      <p>AI Agents Masterclass Module • Built for <strong>por/aiengineering/aiagents</strong> • Powered by Google Deepmind Antigravity Agent</p>
+    </footer>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>

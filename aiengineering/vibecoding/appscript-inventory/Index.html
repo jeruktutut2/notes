@@ -1,0 +1,912 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>VibeInventory App</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    body { font-family: 'Inter', sans-serif; }
+  </style>
+</head>
+<body class="bg-slate-950 text-slate-100 min-h-screen">
+
+  <!-- ==================== LOGIN VIEW ==================== -->
+  <div id="login-view" class="flex min-h-screen items-center justify-center p-4">
+    <div class="w-full max-w-md rounded-2xl border border-slate-800 bg-slate-900/90 p-8 backdrop-blur-md shadow-2xl">
+      <div class="text-center mb-6">
+        <div class="inline-flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-br from-indigo-500 to-purple-600 shadow-lg shadow-indigo-500/30 mb-3">
+          <svg class="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/>
+          </svg>
+        </div>
+        <h1 class="text-2xl font-bold text-white">VibeInventory</h1>
+        <p class="text-xs text-slate-400 mt-1">Sistem Stok & User Management (Google Apps Script)</p>
+      </div>
+
+      <form id="login-form" onsubmit="handleLogin(event)" class="space-y-4">
+        <div>
+          <label class="block text-xs font-semibold text-slate-300 mb-1">Username</label>
+          <input type="text" id="login-username" required placeholder="Masukkan Username Anda"
+            class="w-full rounded-xl border border-slate-800 bg-slate-950 px-4 py-2.5 text-xs text-white placeholder-slate-500 focus:border-indigo-500 focus:outline-none">
+        </div>
+
+        <div>
+          <label class="block text-xs font-semibold text-slate-300 mb-1">Password</label>
+          <input type="password" id="login-password" required placeholder="••••••••"
+            class="w-full rounded-xl border border-slate-800 bg-slate-950 px-4 py-2.5 text-xs text-white placeholder-slate-500 focus:border-indigo-500 focus:outline-none">
+        </div>
+
+        <div id="login-error" class="hidden rounded-xl border border-rose-500/20 bg-rose-500/10 p-3 text-xs text-rose-400"></div>
+
+        <button type="submit" id="btn-login-submit"
+          class="w-full rounded-xl bg-gradient-to-r from-indigo-600 to-purple-600 py-2.5 text-xs font-semibold text-white shadow-lg shadow-indigo-600/30 hover:brightness-110 transition-all flex items-center justify-center gap-2">
+          <span>Masuk ke Sistem</span>
+        </button>
+      </form>
+
+      <div class="mt-6 border-t border-slate-800/80 pt-4 text-center text-[11px] text-slate-500">
+        🔒 Terautentikasi dengan Token Sesi & Verifikasi Perangkat (User-Agent)
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================== DASHBOARD VIEW ==================== -->
+  <div id="dashboard-view" class="hidden min-h-screen flex-col">
+    
+    <!-- Navbar -->
+    <header class="sticky top-0 z-30 border-b border-slate-800 bg-slate-950/80 backdrop-blur-md px-6 py-4">
+      <div class="mx-auto flex max-w-7xl items-center justify-between">
+        <div class="flex items-center gap-3">
+          <div class="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-r from-indigo-500 to-purple-600 text-white font-bold text-sm">
+            VI
+          </div>
+          <div>
+            <h2 class="text-base font-bold text-white leading-none">VibeInventory</h2>
+            <span class="text-[10px] text-slate-400">Google Apps Script Connected</span>
+          </div>
+        </div>
+
+        <nav class="flex items-center gap-2">
+          <button onclick="switchTab('items')" id="tab-items" class="rounded-lg bg-indigo-600 px-3 py-1.5 text-xs font-medium text-white shadow">
+            📦 Inventori Stok
+          </button>
+          <button onclick="switchTab('logs')" id="tab-logs" class="rounded-lg bg-slate-900 px-3 py-1.5 text-xs font-medium text-slate-400 hover:text-white">
+            📜 Log Transaksi
+          </button>
+          <button onclick="switchTab('users')" id="tab-users" class="hidden rounded-lg bg-slate-900 px-3 py-1.5 text-xs font-medium text-slate-400 hover:text-white">
+            👥 User Management
+          </button>
+        </nav>
+
+        <div class="flex items-center gap-3">
+          <div class="text-right hidden sm:block">
+            <div id="user-display-name" class="text-xs font-semibold text-white">Admin</div>
+            <span id="user-display-role" class="rounded bg-indigo-500/10 px-1.5 py-0.5 text-[10px] font-bold text-indigo-400 border border-indigo-500/20">ADMIN</span>
+          </div>
+          <button onclick="handleLogout()" class="rounded-lg border border-slate-800 bg-slate-900 px-3 py-1.5 text-xs font-medium text-slate-400 hover:text-rose-400 transition-all">
+            Keluar
+          </button>
+        </div>
+      </div>
+    </header>
+
+    <!-- Main Container -->
+    <main class="mx-auto max-w-7xl px-6 py-8 flex-1 w-full">
+      
+      <!-- TAB 1: INVENTORY ITEMS -->
+      <section id="section-items">
+        <div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between mb-6">
+          <div>
+            <h3 class="text-lg font-bold text-white">Daftar Stok Barang</h3>
+            <p class="text-xs text-slate-400">Kelola stok barang masuk (Stock In) dan keluar (Stock Out)</p>
+          </div>
+          <button onclick="openAddItemModal()" class="rounded-xl bg-gradient-to-r from-indigo-600 to-purple-600 px-4 py-2 text-xs font-semibold text-white shadow-lg shadow-indigo-600/30 hover:brightness-110">
+            + Tambah Barang Baru
+          </button>
+        </div>
+
+        <div class="rounded-2xl border border-slate-800 bg-slate-900/80 overflow-hidden backdrop-blur-sm">
+          <table class="w-full text-left text-xs">
+            <thead class="bg-slate-950 border-b border-slate-800 text-slate-400 font-semibold uppercase tracking-wider">
+              <tr>
+                <th class="p-4">Kode</th>
+                <th class="p-4">Nama Barang</th>
+                <th class="p-4">Kategori</th>
+                <th class="p-4">Stok</th>
+                <th class="p-4">Satuan</th>
+                <th class="p-4">Status</th>
+                <th class="p-4 text-right">Aksi Stok</th>
+              </tr>
+            </thead>
+            <tbody id="items-table-body" class="divide-y divide-slate-800/80 text-slate-200">
+              <tr>
+                <td colspan="7" class="p-8 text-center text-slate-400">Memuat data barang...</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- TAB 2: TRANSACTION LOGS -->
+      <section id="section-logs" class="hidden">
+        <div class="mb-6">
+          <h3 class="text-lg font-bold text-white">Histori Transaksi Stok</h3>
+          <p class="text-xs text-slate-400">Riwayat otomatis setiap kali ada barang masuk/keluar</p>
+        </div>
+
+        <div class="rounded-2xl border border-slate-800 bg-slate-900/80 overflow-hidden backdrop-blur-sm">
+          <table class="w-full text-left text-xs">
+            <thead class="bg-slate-950 border-b border-slate-800 text-slate-400 font-semibold uppercase tracking-wider">
+              <tr>
+                <th class="p-4">Trx ID</th>
+                <th class="p-4">Kode Barang</th>
+                <th class="p-4">Tipe</th>
+                <th class="p-4">Jumlah</th>
+                <th class="p-4">Catatan</th>
+                <th class="p-4">Petugas</th>
+                <th class="p-4">Waktu</th>
+              </tr>
+            </thead>
+            <tbody id="logs-table-body" class="divide-y divide-slate-800/80 text-slate-200">
+              <tr>
+                <td colspan="7" class="p-8 text-center text-slate-400">Memuat log transaksi...</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- TAB 3: USER MANAGEMENT (ADMIN) -->
+      <section id="section-users" class="hidden">
+        <div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between mb-6">
+          <div>
+            <h3 class="text-lg font-bold text-white">Manajemen Akun User & Password</h3>
+            <p class="text-xs text-slate-400">Khusus Admin: Buat akun staf baru dan perbarui password hash</p>
+          </div>
+          <button onclick="openAddUserModal()" class="rounded-xl bg-gradient-to-r from-purple-600 to-pink-600 px-4 py-2 text-xs font-semibold text-white shadow-lg shadow-purple-600/30 hover:brightness-110">
+            + Tambah User Staf
+          </button>
+        </div>
+
+        <div class="rounded-2xl border border-slate-800 bg-slate-900/80 overflow-hidden backdrop-blur-sm">
+          <table class="w-full text-left text-xs">
+            <thead class="bg-slate-950 border-b border-slate-800 text-slate-400 font-semibold uppercase tracking-wider">
+              <tr>
+                <th class="p-4">User ID</th>
+                <th class="p-4">Username</th>
+                <th class="p-4">Nama Lengkap</th>
+                <th class="p-4">Role</th>
+                <th class="p-4">Dibuat</th>
+                <th class="p-4 text-right">Aksi Password</th>
+              </tr>
+            </thead>
+            <tbody id="users-table-body" class="divide-y divide-slate-800/80 text-slate-200">
+              <tr>
+                <td colspan="6" class="p-8 text-center text-slate-400">Memuat data user...</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+    </main>
+
+  </div>
+
+  <!-- ==================== MODALS ==================== -->
+  <!-- Stock Update Modal -->
+  <div id="modal-stock" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-slate-950/80 backdrop-blur-sm p-4">
+    <div class="w-full max-w-sm rounded-2xl border border-slate-800 bg-slate-900 p-6 shadow-2xl">
+      <h3 id="modal-stock-title" class="text-base font-bold text-white mb-3">Update Stok Barang</h3>
+      <form onsubmit="handleStockSubmit(event)" class="space-y-3">
+        <input type="hidden" id="stock-item-id">
+        <input type="hidden" id="stock-type">
+
+        <div>
+          <label class="block text-xs font-semibold text-slate-300 mb-1">Jumlah Barang</label>
+          <input type="number" id="stock-qty" min="1" required class="w-full rounded-xl border border-slate-800 bg-slate-950 px-3 py-2 text-xs text-white">
+        </div>
+
+        <div>
+          <label class="block text-xs font-semibold text-slate-300 mb-1">Catatan / Referensi</label>
+          <input type="text" id="stock-notes" placeholder="Contoh: Penerimaan Supplier / Penjualan Toko" class="w-full rounded-xl border border-slate-800 bg-slate-950 px-3 py-2 text-xs text-white">
+        </div>
+
+        <div class="flex justify-end gap-2 pt-2">
+          <button type="button" onclick="closeModal('modal-stock')" class="px-3 py-1.5 text-xs text-slate-400">Batal</button>
+          <button type="submit" id="btn-stock-submit" class="rounded-xl bg-indigo-600 px-4 py-1.5 text-xs font-semibold text-white hover:bg-indigo-500">Simpan Update</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Add New Item Modal -->
+  <div id="modal-add-item" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-slate-950/80 backdrop-blur-sm p-4">
+    <div class="w-full max-w-sm rounded-2xl border border-slate-800 bg-slate-900 p-6 shadow-2xl">
+      <h3 class="text-base font-bold text-white mb-3">Tambah Barang Baru</h3>
+      <form onsubmit="handleAddItemSubmit(event)" class="space-y-3">
+        <div>
+          <label class="block text-xs font-semibold text-slate-300 mb-1">Nama Barang</label>
+          <input type="text" id="add-item-name" required placeholder="Contoh: Monitor LG 27 Inch" class="w-full rounded-xl border border-slate-800 bg-slate-950 px-3 py-2 text-xs text-white">
+        </div>
+        <div>
+          <label class="block text-xs font-semibold text-slate-300 mb-1">Kategori</label>
+          <input type="text" id="add-item-category" required placeholder="Contoh: Elektronik / Alat Tulis" class="w-full rounded-xl border border-slate-800 bg-slate-950 px-3 py-2 text-xs text-white">
+        </div>
+        <div class="grid grid-cols-2 gap-2">
+          <div>
+            <label class="block text-xs font-semibold text-slate-300 mb-1">Stok Awal</label>
+            <input type="number" id="add-item-stock" min="0" value="0" required class="w-full rounded-xl border border-slate-800 bg-slate-950 px-3 py-2 text-xs text-white">
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-slate-300 mb-1">Stok Min.</label>
+            <input type="number" id="add-item-min-stock" min="1" value="5" required class="w-full rounded-xl border border-slate-800 bg-slate-950 px-3 py-2 text-xs text-white">
+          </div>
+        </div>
+        <div>
+          <label class="block text-xs font-semibold text-slate-300 mb-1">Satuan</label>
+          <input type="text" id="add-item-unit" required placeholder="Pcs / Unit / Rim" value="Pcs" class="w-full rounded-xl border border-slate-800 bg-slate-950 px-3 py-2 text-xs text-white">
+        </div>
+
+        <div class="flex justify-end gap-2 pt-2">
+          <button type="button" onclick="closeModal('modal-add-item')" class="px-3 py-1.5 text-xs text-slate-400">Batal</button>
+          <button type="submit" id="btn-add-item-submit" class="rounded-xl bg-indigo-600 px-4 py-1.5 text-xs font-semibold text-white hover:bg-indigo-500">Tambah Barang</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Add User Modal -->
+  <div id="modal-user" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-slate-950/80 backdrop-blur-sm p-4">
+    <div class="w-full max-w-sm rounded-2xl border border-slate-800 bg-slate-900 p-6 shadow-2xl">
+      <h3 class="text-base font-bold text-white mb-3">Tambah Akun Staf Baru</h3>
+      <form onsubmit="handleUserSubmit(event)" class="space-y-3">
+        <div>
+          <label class="block text-xs font-semibold text-slate-300 mb-1">Username</label>
+          <input type="text" id="user-username" required class="w-full rounded-xl border border-slate-800 bg-slate-950 px-3 py-2 text-xs text-white">
+        </div>
+        <div>
+          <label class="block text-xs font-semibold text-slate-300 mb-1">Nama Lengkap</label>
+          <input type="text" id="user-fullname" required class="w-full rounded-xl border border-slate-800 bg-slate-950 px-3 py-2 text-xs text-white">
+        </div>
+        <div>
+          <label class="block text-xs font-semibold text-slate-300 mb-1">Password (Otomatis Bcrypt-style Hash)</label>
+          <input type="password" id="user-password" required class="w-full rounded-xl border border-slate-800 bg-slate-950 px-3 py-2 text-xs text-white">
+        </div>
+        <div>
+          <label class="block text-xs font-semibold text-slate-300 mb-1">Role</label>
+          <select id="user-role" class="w-full rounded-xl border border-slate-800 bg-slate-950 px-3 py-2 text-xs text-white">
+            <option value="STAFF">STAFF</option>
+            <option value="ADMIN">ADMIN</option>
+          </select>
+        </div>
+
+        <div class="flex justify-end gap-2 pt-2">
+          <button type="button" onclick="closeModal('modal-user')" class="px-3 py-1.5 text-xs text-slate-400">Batal</button>
+          <button type="submit" id="btn-user-submit" class="rounded-xl bg-purple-600 px-4 py-1.5 text-xs font-semibold text-white hover:bg-purple-500">Buat Akun</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- WhatsApp Integration Modal -->
+  <div id="modal-whatsapp" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-slate-950/80 backdrop-blur-sm p-4">
+    <div class="w-full max-w-md rounded-2xl border border-emerald-500/30 bg-slate-900 p-6 shadow-2xl">
+      <div class="flex items-center gap-3 mb-4">
+        <div class="flex h-10 w-10 items-center justify-center rounded-xl bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">
+          <svg class="h-6 w-6" fill="currentColor" viewBox="0 0 24 24">
+            <path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946.003-6.556 5.338-11.891 11.893-11.891 3.181.001 6.167 1.24 8.413 3.488 2.245 2.248 3.481 5.236 3.48 8.414-.003 6.557-5.338 11.892-11.893 11.892-1.99-.001-3.951-.5-5.688-1.448l-6.305 1.654zm6.597-3.807c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.434 9.889-9.885.002-5.462-4.415-9.89-9.881-9.892-5.452 0-9.887 4.434-9.889 9.884-.001 2.225.651 3.891 1.746 5.634l-.999 3.648 3.742-.981zm11.387-5.464c-.074-.124-.272-.198-.57-.347-.297-.149-1.758-.868-2.031-.967-.272-.099-.47-.149-.669.149-.198.297-.768.967-.941 1.165-.173.198-.347.223-.644.074-.297-.149-1.255-.462-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.297-.347.446-.521.151-.172.2-.296.3-.495.099-.198.05-.372-.025-.521-.075-.148-.669-1.611-.916-2.206-.242-.579-.487-.501-.669-.51l-.57-.01c-.198 0-.52.074-.792.372s-1.04 1.016-1.04 2.479 1.065 2.876 1.213 3.074c.149.198 2.095 3.2 5.076 4.487.709.306 1.263.489 1.694.626.712.226 1.36.194 1.872.118.571-.085 1.758-.719 2.006-1.413.248-.695.248-1.29.173-1.414z"/>
+          </svg>
+        </div>
+        <div>
+          <h3 id="wa-modal-title" class="text-base font-bold text-white">Kirim via WhatsApp</h3>
+          <p class="text-xs text-slate-400">Bagikan rincian inventori atau struk transaksi</p>
+        </div>
+      </div>
+
+      <div class="space-y-3">
+        <div>
+          <label class="block text-xs font-semibold text-slate-300 mb-1">Nomor WhatsApp Tujuan (Opsional)</label>
+          <input type="text" id="wa-target-phone" placeholder="Contoh: 08123456789 (Kosongkan jika kirim manual)" class="w-full rounded-xl border border-slate-800 bg-slate-950 px-3 py-2 text-xs text-white placeholder-slate-600 focus:border-emerald-500 focus:outline-none">
+        </div>
+
+        <div>
+          <label class="block text-xs font-semibold text-slate-300 mb-1">Pratinjau Pesan</label>
+          <textarea id="wa-message-preview" rows="7" class="w-full rounded-xl border border-slate-800 bg-slate-950 p-3 text-xs font-mono text-emerald-400 focus:outline-none" readonly></textarea>
+        </div>
+
+        <div class="flex justify-end gap-2 pt-2">
+          <button type="button" onclick="closeModal('modal-whatsapp')" class="px-3 py-1.5 text-xs text-slate-400">Batal</button>
+          <button type="button" onclick="executeSendWhatsApp()" class="rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 px-4 py-2 text-xs font-semibold text-white shadow-lg shadow-emerald-600/20 hover:brightness-110 flex items-center gap-1.5">
+            <span>Buka WhatsApp</span>
+            <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/>
+            </svg>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Floating WhatsApp Helpdesk Button -->
+  <div class="fixed bottom-6 right-6 z-40">
+    <button onclick="openWhatsAppSupport()" class="group flex items-center gap-2 rounded-full bg-gradient-to-r from-emerald-500 to-teal-600 p-3 text-white shadow-xl shadow-emerald-500/20 hover:scale-105 transition-all">
+      <svg class="h-6 w-6" fill="currentColor" viewBox="0 0 24 24">
+        <path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946.003-6.556 5.338-11.891 11.893-11.891 3.181.001 6.167 1.24 8.413 3.488 2.245 2.248 3.481 5.236 3.48 8.414-.003 6.557-5.338 11.892-11.893 11.892-1.99-.001-3.951-.5-5.688-1.448l-6.305 1.654zm6.597-3.807c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.434 9.889-9.885.002-5.462-4.415-9.89-9.881-9.892-5.452 0-9.887 4.434-9.889 9.884-.001 2.225.651 3.891 1.746 5.634l-.999 3.648 3.742-.981zm11.387-5.464c-.074-.124-.272-.198-.57-.347-.297-.149-1.758-.868-2.031-.967-.272-.099-.47-.149-.669.149-.198.297-.768.967-.941 1.165-.173.198-.347.223-.644.074-.297-.149-1.255-.462-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.297-.347.446-.521.151-.172.2-.296.3-.495.099-.198.05-.372-.025-.521-.075-.148-.669-1.611-.916-2.206-.242-.579-.487-.501-.669-.51l-.57-.01c-.198 0-.52.074-.792.372s-1.04 1.016-1.04 2.479 1.065 2.876 1.213 3.074c.149.198 2.095 3.2 5.076 4.487.709.306 1.263.489 1.694.626.712.226 1.36.194 1.872.118.571-.085 1.758-.719 2.006-1.413.248-.695.248-1.29.173-1.414z"/>
+      </svg>
+      <span class="max-w-0 overflow-hidden whitespace-nowrap text-xs font-semibold group-hover:max-w-xs transition-all duration-300">
+        Bantuan WA
+      </span>
+    </button>
+  </div>
+
+
+  <!-- CLIENT JAVASCRIPT LOGIC -->
+  <script>
+    // Session State Memory
+    let currentUser = null;
+    let sessionToken = sessionStorage.getItem('vibe_session_token') || null;
+
+    let itemsData = [];
+    let logsData = [];
+    let usersData = [];
+
+    // Helper HTML Escaping untuk Mencegah XSS (Cross-Site Scripting)
+    function escapeHtml(str) {
+      if (str === null || str === undefined) return '';
+      return String(str)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+    }
+
+    // Initial check on load
+    window.addEventListener('DOMContentLoaded', () => {
+      const storedUser = sessionStorage.getItem('vibe_user');
+      if (sessionToken && storedUser) {
+        try {
+          currentUser = JSON.parse(storedUser);
+          showDashboard();
+        } catch (e) {
+          handleLogout();
+        }
+      }
+    });
+
+    function handleLogin(e) {
+      e.preventDefault();
+      const u = document.getElementById('login-username').value;
+      const p = document.getElementById('login-password').value;
+      const errEl = document.getElementById('login-error');
+      const btnSubmit = document.getElementById('btn-login-submit');
+
+      errEl.classList.add('hidden');
+      btnSubmit.disabled = true;
+      btnSubmit.innerText = 'Memverifikasi...';
+
+      const userAgent = navigator.userAgent || '';
+
+      // Panggil Apps Script Server atau Simulasi Lokal
+      if (typeof google !== 'undefined' && google.script && google.script.run) {
+        google.script.run
+          .withSuccessHandler((res) => {
+            btnSubmit.disabled = false;
+            btnSubmit.innerText = 'Masuk ke Sistem';
+            if (res.success) {
+              currentUser = res.user;
+              sessionToken = res.token;
+              sessionStorage.setItem('vibe_session_token', sessionToken);
+              sessionStorage.setItem('vibe_user', JSON.stringify(currentUser));
+              showDashboard();
+            } else {
+              errEl.innerText = res.message;
+              errEl.classList.remove('hidden');
+            }
+          })
+          .withFailureHandler((err) => {
+            btnSubmit.disabled = false;
+            btnSubmit.innerText = 'Masuk ke Sistem';
+            errEl.innerText = 'Gagal terhubung ke server: ' + err.toString();
+            errEl.classList.remove('hidden');
+          })
+          .authenticateUser(u, p, userAgent);
+      } else {
+        // Fallback Simulasi Lokal jika dibuka sebagai HTML terpisah tanpa Apps Script
+        btnSubmit.disabled = false;
+        btnSubmit.innerText = 'Masuk ke Sistem';
+        if ((u === 'admin' && p === 'admin123') || (u === 'staf' && p === 'staf123')) {
+          currentUser = {
+            username: u,
+            fullName: u === 'admin' ? 'Administrator Utama' : 'Petugas Gudang Staf',
+            role: u === 'admin' ? 'ADMIN' : 'STAFF'
+          };
+          sessionToken = 'mock_local_token_123';
+          sessionStorage.setItem('vibe_session_token', sessionToken);
+          sessionStorage.setItem('vibe_user', JSON.stringify(currentUser));
+          showDashboard();
+        } else {
+          errEl.innerText = 'Username atau password salah!';
+          errEl.classList.remove('hidden');
+        }
+      }
+    }
+
+    function showDashboard() {
+      document.getElementById('login-view').classList.add('hidden');
+      document.getElementById('dashboard-view').classList.remove('hidden');
+      document.getElementById('dashboard-view').classList.add('flex');
+
+      document.getElementById('user-display-name').innerText = currentUser.fullName;
+      document.getElementById('user-display-role').innerText = currentUser.role;
+
+      if (currentUser.role === 'ADMIN') {
+        document.getElementById('tab-users').classList.remove('hidden');
+      } else {
+        document.getElementById('tab-users').classList.add('hidden');
+      }
+
+      fetchItemsData();
+      fetchLogsData();
+      if (currentUser.role === 'ADMIN') {
+        fetchUsersData();
+      }
+    }
+
+    function handleLogout() {
+      if (typeof google !== 'undefined' && google.script && google.script.run && sessionToken) {
+        google.script.run.logoutUser(sessionToken);
+      }
+      currentUser = null;
+      sessionToken = null;
+      sessionStorage.removeItem('vibe_session_token');
+      sessionStorage.removeItem('vibe_user');
+
+      document.getElementById('dashboard-view').classList.add('hidden');
+      document.getElementById('login-view').classList.remove('hidden');
+    }
+
+    function switchTab(tab) {
+      document.getElementById('section-items').classList.add('hidden');
+      document.getElementById('section-logs').classList.add('hidden');
+      document.getElementById('section-users').classList.add('hidden');
+
+      document.getElementById('tab-items').className = "rounded-lg bg-slate-900 px-3 py-1.5 text-xs font-medium text-slate-400 hover:text-white";
+      document.getElementById('tab-logs').className = "rounded-lg bg-slate-900 px-3 py-1.5 text-xs font-medium text-slate-400 hover:text-white";
+      document.getElementById('tab-users').className = "rounded-lg bg-slate-900 px-3 py-1.5 text-xs font-medium text-slate-400 hover:text-white";
+
+      document.getElementById('section-' + tab).classList.remove('hidden');
+      document.getElementById('tab-' + tab).className = "rounded-lg bg-indigo-600 px-3 py-1.5 text-xs font-medium text-white shadow";
+
+      if (tab === 'items') fetchItemsData();
+      if (tab === 'logs') fetchLogsData();
+      if (tab === 'users' && currentUser && currentUser.role === 'ADMIN') fetchUsersData();
+    }
+
+    function fetchItemsData() {
+      const userAgent = navigator.userAgent || '';
+      if (typeof google !== 'undefined' && google.script && google.script.run) {
+        google.script.run
+          .withSuccessHandler((res) => {
+            if (res.success) {
+              itemsData = res.data;
+              renderItemsTable();
+            } else {
+              if (res.message.includes('Sesi') || res.message.includes('Keamanan')) {
+                alert(res.message);
+                handleLogout();
+              }
+            }
+          })
+          .withFailureHandler((err) => console.error('Fetch Items Error:', err))
+          .getItems(sessionToken, userAgent);
+      } else {
+        // Mock fallback data jika offline
+        itemsData = [
+          { itemId: 'BRG-101', itemName: 'Laptop Monitor 24 Inch', category: 'Elektronik', stock: 15, minStock: 5, unit: 'Unit' },
+          { itemId: 'BRG-102', itemName: 'Keyboard Mechanical RGB', category: 'Elektronik', stock: 8, minStock: 3, unit: 'Pcs' },
+          { itemId: 'BRG-103', itemName: 'Kertas HVS A4 80gsm', category: 'Alat Tulis', stock: 45, minStock: 10, unit: 'Rim' },
+          { itemId: 'BRG-104', itemName: 'Mouse Wireless Ergonomic', category: 'Elektronik', stock: 2, minStock: 5, unit: 'Pcs' },
+        ];
+        renderItemsTable();
+      }
+    }
+
+    function fetchLogsData() {
+      const userAgent = navigator.userAgent || '';
+      if (typeof google !== 'undefined' && google.script && google.script.run) {
+        google.script.run
+          .withSuccessHandler((res) => {
+            if (res.success) {
+              logsData = res.data;
+              renderLogsTable();
+            }
+          })
+          .withFailureHandler((err) => console.error('Fetch Logs Error:', err))
+          .getTransactionLogs(sessionToken, userAgent);
+      } else {
+        logsData = [
+          { trxId: 'TRX-9001', itemId: 'BRG-101', type: 'STOCK_IN', quantity: 15, notes: 'Stok awal gudang', actor: 'admin', timestamp: '2026-07-26 10:00' },
+          { trxId: 'TRX-9002', itemId: 'BRG-104', type: 'STOCK_OUT', quantity: 3, notes: 'Penjualan toko online', actor: 'staf', timestamp: '2026-07-26 11:30' },
+        ];
+        renderLogsTable();
+      }
+    }
+
+    function fetchUsersData() {
+      const userAgent = navigator.userAgent || '';
+      if (typeof google !== 'undefined' && google.script && google.script.run) {
+        google.script.run
+          .withSuccessHandler((res) => {
+            if (res.success) {
+              usersData = res.data;
+              renderUsersTable();
+            }
+          })
+          .withFailureHandler((err) => console.error('Fetch Users Error:', err))
+          .getUsers(sessionToken, userAgent);
+      } else {
+        usersData = [
+          { userId: 'USR-1001', username: 'admin', fullName: 'Administrator Utama', role: 'ADMIN', createdAt: '2026-07-26' },
+          { userId: 'USR-1002', username: 'staf', fullName: 'Petugas Gudang Staf', role: 'STAFF', createdAt: '2026-07-26' },
+        ];
+        renderUsersTable();
+      }
+    }
+
+    function renderItemsTable() {
+      const tbody = document.getElementById('items-table-body');
+      if (!itemsData || itemsData.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="7" class="p-8 text-center text-slate-400">Belum ada barang terdaftar.</td></tr>';
+        return;
+      }
+      tbody.innerHTML = itemsData.map(item => {
+        const isLow = Number(item.stock) <= Number(item.minStock);
+        return `
+          <tr class="hover:bg-slate-900/50">
+            <td class="p-4 font-mono text-indigo-400 font-semibold">${escapeHtml(item.itemId)}</td>
+            <td class="p-4 font-semibold text-white">${escapeHtml(item.itemName)}</td>
+            <td class="p-4 text-slate-300">${escapeHtml(item.category)}</td>
+            <td class="p-4 font-bold ${isLow ? 'text-rose-400' : 'text-emerald-400'}">${escapeHtml(item.stock)}</td>
+            <td class="p-4 text-slate-400">${escapeHtml(item.unit)}</td>
+            <td class="p-4">
+              ${isLow ? '<span class="rounded bg-rose-500/10 border border-rose-500/20 px-2 py-0.5 text-[10px] text-rose-400 font-bold">STOK MENIPIS</span>' 
+                     : '<span class="rounded bg-emerald-500/10 border border-emerald-500/20 px-2 py-0.5 text-[10px] text-emerald-400 font-bold">AMAN</span>'}
+            </td>
+            <td class="p-4 text-right flex justify-end gap-1 items-center">
+              <button onclick="openStockModal('${escapeHtml(item.itemId)}', 'STOCK_IN')" class="rounded bg-emerald-600/20 border border-emerald-500/30 px-2 py-1 text-[11px] text-emerald-300 hover:bg-emerald-600/40">
+                + Stock In
+              </button>
+              <button onclick="openStockModal('${escapeHtml(item.itemId)}', 'STOCK_OUT')" class="rounded bg-rose-600/20 border border-rose-500/30 px-2 py-1 text-[11px] text-rose-300 hover:bg-rose-600/40">
+                - Stock Out
+              </button>
+              <button onclick="openWhatsAppShareModal('ITEM_INFO', '${escapeHtml(item.itemId)}')" title="Bagikan Info Stok via WA" class="rounded bg-emerald-500/20 border border-emerald-500/30 px-2 py-1 text-[11px] text-emerald-400 hover:bg-emerald-500/30 flex items-center gap-1 font-semibold">
+                📲 WA
+              </button>
+              ${isLow ? `
+                <button onclick="openWhatsAppShareModal('REORDER', '${escapeHtml(item.itemId)}')" title="Kirim Order Supplier via WA" class="rounded bg-amber-500/20 border border-amber-500/30 px-2 py-1 text-[11px] text-amber-300 hover:bg-amber-500/30 flex items-center gap-1 font-semibold">
+                  🛒 Order WA
+                </button>
+              ` : ''}
+            </td>
+          </tr>
+        `;
+      }).join('');
+    }
+
+    function renderLogsTable() {
+      const tbody = document.getElementById('logs-table-body');
+      if (!logsData || logsData.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="7" class="p-8 text-center text-slate-400">Belum ada riwayat transaksi.</td></tr>';
+        return;
+      }
+      tbody.innerHTML = logsData.map(log => `
+        <tr class="hover:bg-slate-900/50">
+          <td class="p-4 font-mono text-slate-400">${escapeHtml(log.trxId)}</td>
+          <td class="p-4 font-mono text-indigo-400">${escapeHtml(log.itemId)}</td>
+          <td class="p-4">
+            <span class="rounded px-2 py-0.5 text-[10px] font-bold ${log.type === 'STOCK_IN' ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20' : 'bg-rose-500/10 text-rose-400 border border-rose-500/20'}">
+              ${escapeHtml(log.type)}
+            </span>
+          </td>
+          <td class="p-4 font-bold text-white">${escapeHtml(log.quantity)}</td>
+          <td class="p-4 text-slate-300">${escapeHtml(log.notes)}</td>
+          <td class="p-4 text-purple-400 font-semibold">${escapeHtml(log.actor)}</td>
+          <td class="p-4 text-slate-500 flex items-center justify-between gap-2">
+            <span>${escapeHtml(log.timestamp)}</span>
+            <button onclick="openWhatsAppShareModal('STRUK_TRX', '${escapeHtml(log.trxId)}')" title="Kirim Struk via WA" class="rounded bg-emerald-500/20 border border-emerald-500/30 px-2 py-1 text-[10px] text-emerald-400 hover:bg-emerald-500/30 font-semibold">
+              📲 Struk WA
+            </button>
+          </td>
+        </tr>
+      `).join('');
+    }
+
+    let activeWaMessage = '';
+
+    function openWhatsAppShareModal(type, targetId) {
+      let message = '';
+      if (type === 'ITEM_INFO') {
+        const item = itemsData.find(i => i.itemId === targetId);
+        if (!item) return;
+        const isLow = Number(item.stock) <= Number(item.minStock);
+        const status = isLow ? '⚠️ STOK MENIPIS / KRITIS' : '✅ STOK AMAN';
+        message = `📦 *INFORMASI BARANG - VIBEINVENTORY*\n\n` +
+                  `• Kode Barang: ${item.itemId}\n` +
+                  `• Nama Barang: ${item.itemName}\n` +
+                  `• Kategori: ${item.category}\n` +
+                  `• Sisa Stok: ${item.stock} ${item.unit}\n` +
+                  `• Stok Minimal: ${item.minStock} ${item.unit}\n` +
+                  `• Status: ${status}\n\n` +
+                  `_Dikirim dari VibeInventory System_`;
+        document.getElementById('wa-modal-title').innerText = 'Share Info Barang via WhatsApp';
+      } else if (type === 'REORDER') {
+        const item = itemsData.find(i => i.itemId === targetId);
+        if (!item) return;
+        message = `🛒 *PERMOHONAN RESTOK (REORDER SUPPLIER)*\n\n` +
+                  `Kepada Yth. Supplier / Tim Pengadaan,\n` +
+                  `Mohon pengadaan kembali stok barang berikut:\n\n` +
+                  `• Kode Barang: ${item.itemId}\n` +
+                  `• Nama Barang: ${item.itemName}\n` +
+                  `• Kategori: ${item.category}\n` +
+                  `• Sisa Stok Saat Ini: ${item.stock} ${item.unit} (Batas Min: ${item.minStock} ${item.unit})\n` +
+                  `• Estimasi Kebutuhan: ${item.minStock * 2} ${item.unit}\n\n` +
+                  `Terima Kasih,\n` +
+                  `_VibeInventory System_`;
+        document.getElementById('wa-modal-title').innerText = 'Reorder Supplier via WhatsApp';
+      } else if (type === 'STRUK_TRX') {
+        const log = logsData.find(l => l.trxId === targetId);
+        if (!log) return;
+        const typeLabel = log.type === 'STOCK_IN' ? '📥 STOCK IN (BARANG MASUK)' : '📤 STOCK OUT (BARANG KELUAR)';
+        message = `📜 *STRUK TRANSAKSI STOK - VIBEINVENTORY*\n\n` +
+                  `• No. Transaksi: ${log.trxId}\n` +
+                  `• Tipe Transaksi: ${typeLabel}\n` +
+                  `• Kode Barang: ${log.itemId}\n` +
+                  `• Kuantitas: ${log.quantity}\n` +
+                  `• Catatan: ${log.notes || '-'}\n` +
+                  `• Pelaksana: ${log.actor}\n` +
+                  `• Waktu: ${log.timestamp}\n\n` +
+                  `_Simpan bukti transaksi resmi ini._`;
+        document.getElementById('wa-modal-title').innerText = 'Kirim Struk Transaksi via WA';
+      }
+
+      activeWaMessage = message;
+      document.getElementById('wa-message-preview').value = message;
+      document.getElementById('modal-whatsapp').classList.remove('hidden');
+    }
+
+    function executeSendWhatsApp() {
+      let targetPhone = document.getElementById('wa-target-phone').value.trim();
+      if (targetPhone) {
+        targetPhone = targetPhone.replace(/[^0-9]/g, '');
+        if (targetPhone.startsWith('0')) {
+          targetPhone = '62' + targetPhone.substring(1);
+        }
+      }
+      const encodedMsg = encodeURIComponent(activeWaMessage);
+      const url = targetPhone ? `https://wa.me/${targetPhone}?text=${encodedMsg}` : `https://wa.me/?text=${encodedMsg}`;
+      window.open(url, '_blank');
+      closeModal('modal-whatsapp');
+    }
+
+    function openWhatsAppSupport() {
+      const msg = encodeURIComponent("Halo Admin VibeInventory, saya butuh bantuan terkait sistem inventori.");
+      window.open(`https://wa.me/?text=${msg}`, '_blank');
+    }
+
+
+    function renderUsersTable() {
+      const tbody = document.getElementById('users-table-body');
+      if (!usersData || usersData.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="6" class="p-8 text-center text-slate-400">Belum ada data user.</td></tr>';
+        return;
+      }
+      tbody.innerHTML = usersData.map(u => `
+        <tr class="hover:bg-slate-900/50">
+          <td class="p-4 font-mono text-slate-400">${escapeHtml(u.userId)}</td>
+          <td class="p-4 font-semibold text-white">${escapeHtml(u.username)}</td>
+          <td class="p-4 text-slate-300">${escapeHtml(u.fullName)}</td>
+          <td class="p-4">
+            <span class="rounded px-2 py-0.5 text-[10px] font-bold ${u.role === 'ADMIN' ? 'bg-indigo-500/10 text-indigo-400 border border-indigo-500/20' : 'bg-slate-800 text-slate-300'}">
+              ${escapeHtml(u.role)}
+            </span>
+          </td>
+          <td class="p-4 text-slate-500">${escapeHtml(u.createdAt)}</td>
+          <td class="p-4 text-right">
+            <button onclick="promptResetPassword('${escapeHtml(u.username)}')" class="rounded bg-slate-800 border border-slate-700 px-2 py-1 text-[11px] text-slate-300 hover:text-white">
+              Reset Password
+            </button>
+          </td>
+        </tr>
+      `).join('');
+    }
+
+    function openStockModal(itemId, type) {
+      document.getElementById('stock-item-id').value = itemId;
+      document.getElementById('stock-type').value = type;
+      document.getElementById('modal-stock-title').innerText = type === 'STOCK_IN' ? 'Penambahan Stok (Stock In)' : 'Pengurangan Stok (Stock Out)';
+      document.getElementById('modal-stock').classList.remove('hidden');
+    }
+
+    function openAddItemModal() {
+      document.getElementById('modal-add-item').classList.remove('hidden');
+    }
+
+    function handleStockSubmit(e) {
+      e.preventDefault();
+      const itemId = document.getElementById('stock-item-id').value;
+      const type = document.getElementById('stock-type').value;
+      const qty = Number(document.getElementById('stock-qty').value);
+      const notes = document.getElementById('stock-notes').value;
+      const btnSubmit = document.getElementById('btn-stock-submit');
+      const userAgent = navigator.userAgent || '';
+
+      btnSubmit.disabled = true;
+      btnSubmit.innerText = 'Menyimpan...';
+
+      if (typeof google !== 'undefined' && google.script && google.script.run) {
+        google.script.run
+          .withSuccessHandler((res) => {
+            btnSubmit.disabled = false;
+            btnSubmit.innerText = 'Simpan Update';
+            if (res.success) {
+              closeModal('modal-stock');
+              fetchItemsData();
+              fetchLogsData();
+              alert(res.message);
+            } else {
+              alert('Gagal: ' + res.message);
+            }
+          })
+          .withFailureHandler((err) => {
+            btnSubmit.disabled = false;
+            btnSubmit.innerText = 'Simpan Update';
+            alert('Error server: ' + err.toString());
+          })
+          .updateStock(sessionToken, itemId, qty, type, notes, userAgent);
+      } else {
+        // Fallback Simulasi Offline
+        btnSubmit.disabled = false;
+        btnSubmit.innerText = 'Simpan Update';
+        const item = itemsData.find(i => i.itemId === itemId);
+        if (item) {
+          if (type === 'STOCK_OUT' && qty > item.stock) {
+            alert(`Gagal! Stok tidak mencukupi. Stok tersedia: ${item.stock}`);
+            return;
+          }
+          if (type === 'STOCK_IN') item.stock += qty;
+          if (type === 'STOCK_OUT') item.stock -= qty;
+        }
+        closeModal('modal-stock');
+        renderItemsTable();
+        alert('Stok berhasil diperbarui (Simulasi)!');
+      }
+    }
+
+    function handleAddItemSubmit(e) {
+      e.preventDefault();
+      const name = document.getElementById('add-item-name').value;
+      const category = document.getElementById('add-item-category').value;
+      const initialStock = Number(document.getElementById('add-item-stock').value);
+      const minStock = Number(document.getElementById('add-item-min-stock').value);
+      const unit = document.getElementById('add-item-unit').value;
+      const btnSubmit = document.getElementById('btn-add-item-submit');
+      const userAgent = navigator.userAgent || '';
+
+      const itemPayload = { itemName: name, category: category, initialStock: initialStock, minStock: minStock, unit: unit };
+
+      btnSubmit.disabled = true;
+      btnSubmit.innerText = 'Menambahkan...';
+
+      if (typeof google !== 'undefined' && google.script && google.script.run) {
+        google.script.run
+          .withSuccessHandler((res) => {
+            btnSubmit.disabled = false;
+            btnSubmit.innerText = 'Tambah Barang';
+            if (res.success) {
+              closeModal('modal-add-item');
+              fetchItemsData();
+              fetchLogsData();
+              alert(res.message);
+            } else {
+              alert('Gagal: ' + res.message);
+            }
+          })
+          .withFailureHandler((err) => {
+            btnSubmit.disabled = false;
+            btnSubmit.innerText = 'Tambah Barang';
+            alert('Error server: ' + err.toString());
+          })
+          .addItem(sessionToken, itemPayload, userAgent);
+      } else {
+        btnSubmit.disabled = false;
+        btnSubmit.innerText = 'Tambah Barang';
+        itemsData.push({
+          itemId: 'BRG-' + Math.floor(100 + Math.random() * 900),
+          itemName: name, category: category, stock: initialStock, minStock: minStock, unit: unit
+        });
+        closeModal('modal-add-item');
+        renderItemsTable();
+        alert('Barang berhasil ditambahkan (Simulasi)!');
+      }
+    }
+
+    function openAddUserModal() {
+      document.getElementById('modal-user').classList.remove('hidden');
+    }
+
+    function handleUserSubmit(e) {
+      e.preventDefault();
+      const u = document.getElementById('user-username').value;
+      const f = document.getElementById('user-fullname').value;
+      const p = document.getElementById('user-password').value;
+      const r = document.getElementById('user-role').value;
+      const btnSubmit = document.getElementById('btn-user-submit');
+      const userAgent = navigator.userAgent || '';
+
+      const userPayload = { username: u, fullName: f, password: p, role: r };
+
+      btnSubmit.disabled = true;
+      btnSubmit.innerText = 'Membuat Akun...';
+
+      if (typeof google !== 'undefined' && google.script && google.script.run) {
+        google.script.run
+          .withSuccessHandler((res) => {
+            btnSubmit.disabled = false;
+            btnSubmit.innerText = 'Buat Akun';
+            if (res.success) {
+              closeModal('modal-user');
+              fetchUsersData();
+              alert(res.message);
+            } else {
+              alert('Gagal: ' + res.message);
+            }
+          })
+          .withFailureHandler((err) => {
+            btnSubmit.disabled = false;
+            btnSubmit.innerText = 'Buat Akun';
+            alert('Error server: ' + err.toString());
+          })
+          .createUser(sessionToken, userPayload, userAgent);
+      } else {
+        btnSubmit.disabled = false;
+        btnSubmit.innerText = 'Buat Akun';
+        usersData.push({
+          userId: 'USR-' + Math.floor(1000 + Math.random() * 9000),
+          username: u, fullName: f, role: r, createdAt: new Date().toISOString().slice(0, 10)
+        });
+        closeModal('modal-user');
+        renderUsersTable();
+        alert(`User ${u} berhasil dibuat (Simulasi)!`);
+      }
+    }
+
+    function promptResetPassword(targetUsername) {
+      const newP = prompt(`Masukkan password baru untuk user ${targetUsername}:`);
+      const userAgent = navigator.userAgent || '';
+      if (newP && newP.trim().length > 0) {
+        if (typeof google !== 'undefined' && google.script && google.script.run) {
+          google.script.run
+            .withSuccessHandler((res) => {
+              alert(res.message);
+            })
+            .withFailureHandler((err) => {
+              alert('Error server: ' + err.toString());
+            })
+            .changePassword(sessionToken, targetUsername, newP.trim(), userAgent);
+        } else {
+          alert(`Password ${targetUsername} berhasil diubah (Simulasi)!`);
+        }
+      }
+    }
+
+    function closeModal(id) {
+      document.getElementById(id).classList.add('hidden');
+    }
+  </script>
+
+</body>
+</html>

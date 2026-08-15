@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Type of Models - AI Engineer Roadmap Interactive Visualizer</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="app-container">
+        <!-- Header Banner -->
+        <header class="main-header">
+            <div class="badge-roadmap">roadmap.sh / ai-engineer</div>
+            <h1>Type of Models Interactive Visualizer</h1>
+            <p class="subtitle">Platform Pembelajaran Visual Arsitektur Model, Deployment, VRAM Calculator & Benchmark Biaya</p>
+        </header>
+
+        <!-- Main Navigation Tabs -->
+        <nav class="nav-tabs">
+            <button class="tab-btn active" data-tab="tab-overview">🌐 Roadmap Overview</button>
+            <button class="tab-btn" data-tab="tab-pretrained">⚡ 1. Pre-trained Models</button>
+            <button class="tab-btn" data-tab="tab-closed-open">🔓 2. Closed vs Open Source</button>
+            <button class="tab-btn" data-tab="tab-selfhosted">🖥️ 3. Self-Hosted Models</button>
+            <button class="tab-btn" data-tab="tab-vram-calc">🧮 VRAM & TCO Calculator</button>
+        </nav>
+
+        <!-- Main Content View -->
+        <main class="content-area">
+            
+            <!-- TAB 0: OVERVIEW -->
+            <section id="tab-overview" class="tab-content active">
+                <div class="card glass-card">
+                    <h2>Peta Konsep: Type of Models</h2>
+                    <p>Berdasarkan Diagram AI Engineer Roadmap, topik <strong>Type of Models</strong> terbagi menjadi 3 cabang utama:</p>
+                    
+                    <div class="roadmap-diagram">
+                        <div class="root-node">
+                            <span>Type of Models</span>
+                        </div>
+                        <div class="connector-lines"></div>
+                        <div class="sub-nodes">
+                            <div class="node-card gold">
+                                <h3>Pre-trained Models</h3>
+                                <p>Base vs Instruct, Arsitektur Transformer, Bit Quantization (GGUF/AWQ), VRAM Math.</p>
+                            </div>
+                            <div class="node-card gold">
+                                <h3>Closed vs Open Source Models</h3>
+                                <p>Proprietary APIs (OpenAI/Claude) vs Open Weights (Llama/Mistral), TCO & Lisensi.</p>
+                            </div>
+                            <div class="node-card gold">
+                                <h3>Self-Hosted Models</h3>
+                                <p>Ollama, vLLM PagedAttention, Continuous Batching, Hardware Sizing & FastAPI.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- TAB 1: PRE-TRAINED MODELS -->
+            <section id="tab-pretrained" class="tab-content">
+                <div class="grid-2col">
+                    <div class="card glass-card">
+                        <h2>Base Model vs Instruct Model Simulator</h2>
+                        <p>Cobalah memasukkan prompt untuk melihat perbedaan cara merespons antara Base Completion vs Instruct Model:</p>
+                        
+                        <div class="form-group">
+                            <label for="prompt-input">Input Prompt / Perintah:</label>
+                            <input type="text" id="prompt-input" value="Apa ibukota Indonesia?" placeholder="Ketik pertanyaan...">
+                        </div>
+                        
+                        <button id="btn-simulate-model" class="btn-primary">Jalankan Simulasi Response</button>
+
+                        <div class="sim-output-box">
+                            <div class="output-block">
+                                <h4>📄 Output Base Model (Raw Completion):</h4>
+                                <pre id="out-base-model">Klik tombol di atas untuk menjalankan simulasi.</pre>
+                            </div>
+                            <div class="output-block">
+                                <h4>💬 Output Instruct Model (Chat Aligned):</h4>
+                                <pre id="out-instruct-model">Klik tombol di atas untuk menjalankan simulasi.</pre>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card glass-card">
+                        <h2>Arsitektur Transformer Comparison</h2>
+                        <div class="arch-selector">
+                            <button class="arch-btn active" data-arch="encoder">Encoder-Only</button>
+                            <button class="arch-btn" data-arch="decoder">Decoder-Only</button>
+                            <button class="arch-btn" data-arch="encdec">Encoder-Decoder</button>
+                        </div>
+                        
+                        <div id="arch-details" class="arch-info-panel">
+                            <!-- Populated dynamically via JS -->
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- TAB 2: CLOSED VS OPEN SOURCE -->
+            <section id="tab-closed-open" class="tab-content">
+                <div class="card glass-card">
+                    <h2>Matriks Evaluasi: Closed API vs Open Weights</h2>
+                    
+                    <div class="table-responsive">
+                        <table class="styled-table">
+                            <thead>
+                                <tr>
+                                    <th>Kriteria Evaluasi</th>
+                                    <th>Closed Proprietary API (GPT-4o, Claude)</th>
+                                    <th>Open Weights Model (Llama 3.1, Qwen 2.5)</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td><strong>Akses Bobot Model</strong></td>
+                                    <td><span class="badge red">Black Box (API Only)</span></td>
+                                    <td><span class="badge green">Full Access (.safetensors, .gguf)</span></td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Kecepatan Deployment</strong></td>
+                                    <td><span class="badge green">Instant (&lt; 5 Menit)</span></td>
+                                    <td><span class="badge yellow">Butuh Setup Server GPU</span></td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Data Privacy & Security</strong></td>
+                                    <td><span class="badge yellow">Vendor Policy Dependent</span></td>
+                                    <td><span class="badge green">100% On-Premise / Local</span></td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Biaya Skala Besar (>100M tokens)</strong></td>
+                                    <td><span class="badge red">Mahal (Linier Token Cost)</span></td>
+                                    <td><span class="badge green">Sangat Murah (Fixed GPU Rate)</span></td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Custom Fine-Tuning</strong></td>
+                                    <td><span class="badge yellow">API Tuning Terbatas</span></td>
+                                    <td><span class="badge green">LoRA / SFT Bebas Tanpa Batas</span></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <!-- TAB 3: SELF-HOSTED MODELS -->
+            <section id="tab-selfhosted" class="tab-content">
+                <div class="grid-2col">
+                    <div class="card glass-card">
+                        <h2>vLLM Engine: PagedAttention & Continuous Batching</h2>
+                        <p>Mengapa vLLM mendominasi penyajian model produksi?</p>
+                        
+                        <div class="feature-item">
+                            <h4>🔥 PagedAttention</h4>
+                            <p>Membagi KV Cache menjadi Virtual Memory Blocks, mengeliminasi fragmentasi dan menghemat memori hingga 96%.</p>
+                        </div>
+                        <div class="feature-item">
+                            <h4>⚡ Continuous Batching</h4>
+                            <p>Request baru disisipkan secara langsung pada level iterasi tanpa menunggu request lama selesai generate token.</p>
+                        </div>
+                    </div>
+
+                    <div class="card glass-card">
+                        <h2>Ollama Local Integration Workflow</h2>
+                        <div class="code-block">
+                            <pre><code># 1. Install Ollama & Pull Model GGUF 4-bit
+ollama pull llama3.1
+
+# 2. Test via REST API Endpoint
+curl http://localhost:11434/api/generate -d '{
+  "model": "llama3.1",
+  "prompt": "Jelaskan AI Engineering"
+}'</code></pre>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- TAB 4: VRAM & TCO CALCULATOR -->
+            <section id="tab-vram-calc" class="tab-content">
+                <div class="grid-2col">
+                    <div class="card glass-card">
+                        <h2>🧮 Interactive VRAM GPU Calculator</h2>
+                        <div class="form-group">
+                            <label>Jumlah Parameter Model (Billion):</label>
+                            <input type="number" id="vram-params" value="8" step="0.1" min="1">
+                        </div>
+                        <div class="form-group">
+                            <label>Presisi Bit (Quantization):</label>
+                            <select id="vram-bits">
+                                <option value="16">FP16 / BF16 (16-bit) - Unquantized</option>
+                                <option value="8">INT8 (8-bit) - High Precision Quant</option>
+                                <option value="4" selected>INT4 / Q4_K_M (4-bit) - Standard Local</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Context Length (Tokens):</label>
+                            <input type="number" id="vram-context" value="8192" step="1024">
+                        </div>
+
+                        <div class="calc-results">
+                            <div class="res-row"><span>Memori Weights:</span> <strong id="res-weight-gb">4.0 GB</strong></div>
+                            <div class="res-row"><span>KV Cache Memori:</span> <strong id="res-kv-gb">1.5 GB</strong></div>
+                            <div class="res-row highlight"><span>Total VRAM GPU Dibutuhkan:</span> <strong id="res-total-vram">6.7 GB</strong></div>
+                            <div class="res-row"><span>Rekomendasi Hardware:</span> <span id="res-rec-hardware" class="badge green">NVIDIA RTX 3060 / 4060 8GB</span></div>
+                        </div>
+                    </div>
+
+                    <div class="card glass-card">
+                        <h2>💰 TCO Simulator (Closed API vs Self-Hosted GPU)</h2>
+                        <div class="form-group">
+                            <label>Volume Token Bulanan (Juta Token):</label>
+                            <input type="range" id="token-slider" min="1" max="500" value="50">
+                            <span id="slider-val" class="slider-display">50 Juta Token / Bulan</span>
+                        </div>
+
+                        <div class="tco-results">
+                            <div class="tco-card">
+                                <h4>OpenAI GPT-4o-mini</h4>
+                                <div class="price" id="cost-gpt4o-mini">$11.25 / bulan</div>
+                            </div>
+                            <div class="tco-card">
+                                <h4>OpenAI GPT-4o</h4>
+                                <div class="price" id="cost-gpt4o">$237.50 / bulan</div>
+                            </div>
+                            <div class="tco-card highlight-card">
+                                <h4>Self-Hosted GPU (vLLM)</h4>
+                                <div class="price" id="cost-selfhosted">$250.00 / bulan</div>
+                                <span id="selfhosted-hw" class="subtext">1x RTX 4090 (24GB)</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+        </main>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
